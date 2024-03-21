@@ -1,0 +1,243 @@
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model actualite {
+  id                    Int                   @id @default(autoincrement())
+  idRV                  Int
+  responsablevalidation responsablevalidation @relation(fields: [idRV], references: [responsablevalidationId], map: "Actualite_idRV_fkey")
+
+  @@index([idRV], map: "Actualite_idRV_fkey")
+}
+
+model club {
+  clubId  Int     @id @default(autoincrement())
+  profile profile @relation(fields: [clubId], references: [id], map: "Club_clubId_fkey")
+}
+
+model demandedevis {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandeDevis_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandeDevis_visitorId_fkey")
+}
+
+model demandeemploi {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandeEmploi_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandeEmploi_visitorId_fkey")
+}
+
+model demandeformateur {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandeFormateur_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandeFormateur_visitorId_fkey")
+}
+
+model demandepartenaire {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandePartenaire_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandePartenaire_visitorId_fkey")
+}
+
+model demandeprojetfablab {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandeProjetFablab_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandeProjetFablab_visitorId_fkey")
+}
+
+model demandevisite {
+  id        Int     @id @default(autoincrement())
+  status    String
+  visitorId Int
+  visitor   visitor @relation(fields: [visitorId], references: [id], map: "DemandeVisite_visitorId_fkey")
+
+  @@index([visitorId], map: "DemandeVisite_visitorId_fkey")
+}
+
+model dlab {
+  dlabId  Int     @id @default(autoincrement())
+  profile profile @relation(fields: [dlabId], references: [id], map: "Dlab_dlabId_fkey")
+}
+
+model domaine {
+  id         Int         @id @default(autoincrement())
+  nomDomaine String
+  formation  formation[]
+}
+
+model dre {
+  dreId   Int     @id @default(autoincrement())
+  userId  Int
+  profile profile @relation(fields: [dreId], references: [id], map: "DRE_dreId_fkey")
+}
+
+model evaluation {
+  id          Int          @id @default(autoincrement())
+  idFormation Int
+  note        Int
+  formation   formation    @relation(fields: [idFormation], references: [id], map: "Evaluation_idFormation_fkey")
+  partenaire  partenaire[] @relation("evaluationformation")
+
+  @@index([idFormation], map: "Evaluation_idFormation_fkey")
+}
+
+model evenementalumni {
+  id             Int          @id @default(autoincrement())
+  expertAlumniId Int
+  nomEvenement   String
+  expertalumni   expertalumni @relation(fields: [expertAlumniId], references: [expertId], map: "EvenementAlumni_expertAlumniId_fkey")
+  visitor        visitor[]    @relation("inscription")
+
+  @@index([expertAlumniId], map: "EvenementAlumni_expertAlumniId_fkey")
+}
+
+// !!! hna raid
+// model evenement {
+//   id Int @id @default(autoincrement())
+// }
+model expertalumni {
+  expertId        Int               @id @default(autoincrement())
+  evenementalumni evenementalumni[]
+  profile         profile           @relation(fields: [expertId], references: [id], map: "ExpertAlumni_expertId_fkey")
+}
+
+model formateur {
+  id        Int         @id @default(autoincrement())
+  formation formation[] @relation("formateurformations")
+}
+
+model formation {
+  id          Int           @id @default(autoincrement())
+  domaineId   Int
+  themeId     Int           @unique(map: "Formation_themeId_key")
+  evaluation  evaluation[]
+  domaine     domaine       @relation(fields: [domaineId], references: [id], map: "Formation_domaineId_fkey")
+  theme       theme         @relation(fields: [themeId], references: [id], map: "Formation_themeId_fkey")
+  participant participant[]
+  formateur   formateur[]   @relation("formateurformations")
+
+  @@index([domaineId], map: "Formation_domaineId_fkey")
+}
+
+model groupe {
+  id          Int           @id @default(autoincrement())
+  numeroSalle String
+  participant participant[]
+}
+
+model message {
+  id       Int    @id @default(autoincrement())
+  message  String
+  ticketId Int
+  ticket   ticket @relation(fields: [ticketId], references: [id], map: "Message_ticketId_fkey")
+
+  @@index([ticketId], map: "Message_ticketId_fkey")
+}
+
+model partenaire {
+  partenaireId Int          @id @default(autoincrement())
+  userId       Int
+  profile      profile      @relation(fields: [partenaireId], references: [id], map: "Partenaire_partenaireId_fkey")
+  evaluation   evaluation[] @relation("evaluationformation")
+}
+
+model participant {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique(map: "Participant_email_key")
+  adresse     String
+  fullname    String
+  phone       String
+  formationId Int
+  groupeId    Int
+  formation   formation @relation(fields: [formationId], references: [id], map: "Participant_formationId_fkey")
+  groupe      groupe    @relation(fields: [groupeId], references: [id], map: "Participant_groupeId_fkey")
+
+  @@index([formationId], map: "Participant_formationId_fkey")
+  @@index([groupeId], map: "Participant_groupeId_fkey")
+}
+
+model profile {
+  id                    Int                    @id @default(autoincrement())
+  username              String
+  email                 String                 @unique(map: "Profile_email_key")
+  adresse               String
+  fullname              String
+  phone                 String
+  club                  club?
+  dlab                  dlab?
+  dre                   dre?
+  expertalumni          expertalumni?
+  partenaire            partenaire?
+  responsablevalidation responsablevalidation?
+  student               student?
+}
+
+model responsablevalidation {
+  responsablevalidationId Int         @id @default(autoincrement())
+  userId                  Int
+  actualite               actualite[]
+  profile                 profile     @relation(fields: [responsablevalidationId], references: [id], map: "ResponsableValidation_responsablevalidationId_fkey")
+}
+
+model student {
+  studentId Int     @id @default(autoincrement())
+  userId    Int
+  profile   profile @relation(fields: [studentId], references: [id], map: "Student_studentId_fkey")
+}
+
+model theme {
+  id        Int        @id @default(autoincrement())
+  nomTheme  String
+  formation formation?
+}
+
+model ticket {
+  id      Int       @id @default(autoincrement())
+  title   String
+  message message[]
+}
+
+model visite {
+  id            Int    @id @default(autoincrement())
+  nbParticipant Int
+  typeVisite    String
+}
+
+model visitor {
+  id                  Int                   @id @default(autoincrement())
+  email               String                @unique(map: "Visitor_email_key")
+  adresse             String
+  fullname            String
+  phone               String
+  demandedevis        demandedevis[]
+  demandeemploi       demandeemploi[]
+  demandeformateur    demandeformateur[]
+  demandepartenaire   demandepartenaire[]
+  demandeprojetfablab demandeprojetfablab[]
+  demandevisite       demandevisite[]
+  evenementalumni     evenementalumni[]     @relation("inscription")
+}
