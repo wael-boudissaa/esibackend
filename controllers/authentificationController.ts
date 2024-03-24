@@ -15,10 +15,11 @@ function createRefreshToken(id : string, type : string, expiresIn = "1d") {
     id: id,
     type: type,
   };
-
+}
 interface JwtOptions {
   expiresIn: string | number;
 }
+
 const ROUND: string | number = (process.env.KEY_ROUND as string) || 10;
 
 const jwtSecret: string =
@@ -112,7 +113,7 @@ export const login = async (req: Request, resp: Response) => {
   // ??? Update refresh token on the database and create new acces token 
 };
 
-export const updateTokens = async (req:Request , resp: Response){
+export const updateTokens = async (req:Request , resp: Response) =>{
   // !! Refresh token in database
  // !! Verifying the the refresh token isnt expired
   // jwt.verify(

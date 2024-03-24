@@ -116,9 +116,29 @@ model evenementalumni {
 }
 
 // !!! hna raid
-// model evenement {
-//   id Int @id @default(autoincrement())
-// }
+model evenement {
+  id                    Int                   @id @default(autoincrement())
+  club                  club                  @relation(fields: [clubId], references: [clubId], map: "Evenement_clubId_fkey")
+  responsablevalidation responsablevalidation @relation(fields: [idRV], references: [responsablevalidationId], map: "Evenement_responsablevalidationId_fkey")
+  titre                 String
+  description           String?       
+  image                 String?               
+  dateDebut             DateTime?
+  dateFin               DateTime?
+
+  @@index([clubId], map: "Evenement_clubId_fkey")
+  @@index([idRV], map: "Evenement_responsablevalidationId_fkey")
+}
+
+
+
+
+
+
+
+
+
+
 model expertalumni {
   expertId        Int               @id @default(autoincrement())
   evenementalumni evenementalumni[]
