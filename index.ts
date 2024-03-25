@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 import profileRouter from "./routes/profileRouter";
 import emailRoute from "./routes/emailRoute";
 dotenv.config();

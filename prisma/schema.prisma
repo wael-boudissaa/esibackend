@@ -132,13 +132,6 @@ model evenement {
 
 
 
-
-
-
-
-
-
-
 model expertalumni {
   expertId        Int               @id @default(autoincrement())
   evenementalumni evenementalumni[]

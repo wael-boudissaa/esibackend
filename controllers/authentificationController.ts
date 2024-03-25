@@ -113,7 +113,7 @@ export const login = async (req: Request, resp: Response) => {
   // ??? Update refresh token on the database and create new acces token 
 };
 
-export const updateTokens = async (req:Request , resp: Response) =>{
+export const updateTokens = async (req:Request , res: Response) =>{
   // !! Refresh token in database
  // !! Verifying the the refresh token isnt expired
   // jwt.verify(
@@ -130,6 +130,6 @@ export const updateTokens = async (req:Request , resp: Response) =>{
   //           .status(403)
   //           .json({ error: "Refresh token verification error" });
   //       }
-  //     }
+  //     }})
 // !! Generate a new acces token 
 }
