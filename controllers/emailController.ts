@@ -5,8 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
-
-const generateRandomPassword = () => {
+export const generateRandomPassword = () => {
   const charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let password = "";
@@ -20,11 +19,30 @@ const generateRandomPassword = () => {
 };
 
 class emailController {
-  async sendPartenaire(req: Request, res: Response) {
+  private _email: string;
+  private _password: string;
+
+  constructor(email: string, password: string) {
+    this._email = email;
+    this._password = password;
+  }
+
+  get email(): string {
+    return this._email;
+  }
+
+  set email(email: string) {
+    this._email = email;
+  }
+
+  get password(): string {
+    return this._password;
+  }
+
+  async generateMail(req: Request, res: Response) {
     let config = {
       service: "gmail",
       port: 2525,
-      // your email domain
       auth: {
         user: process.env.GMAIL_APP_USER, // your email address
         pass: process.env.GMAIL_APP_PASSWORD, // your password
@@ -38,7 +56,7 @@ class emailController {
       subject: "Welcome to ESI Website!", // Subject line
       html: `<h2>Congratulations on Becoming a Partner!</h2>
  <p>
-          Dear [Partner Name],
+          Dear ${req.body.fullname},
       </p>
       
       <p>
@@ -55,7 +73,7 @@ class emailController {
       
       <ul>
           <li><strong>Email:</strong> ${req.body.email}</li>
-          <li><strong>Password:</strong> ${generateRandomPassword()}</li>
+          <li><strong>Password:</strong> ${this.password}</li>
       </ul>
       
       <p>
