@@ -32,25 +32,44 @@ class EventController {
     }
   }
 
-  //
+  async createEvent(req: Request, res: Response) {
+    const { clubId,responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
+    try {
+      const newEvent = await prisma.evenement.create({
+        data: {
+          club: { connect: { clubId } },
+          responsablevalidation: { connect: { responsableValidationId }},
+          titre,
+          description,
+          image,
+          dateDebut,
+          dateFin,
+        },
+      });
+      res.json(newEvent);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      res.status(500).json({ error: "An error occurred while creating event." });
+    }
+  }
 
-  // async validateEvent(req: Request, res: Response) {
-  //   const { eventId, responsablevalidationId } = req.body;
-  //   try {
-  //     const updatedEvent = await prisma.evenement.update({
-  //       where: {
-  //         id: eventId,
-  //       },
-  //       data: {
-  //         responsablevalidation: { connect: { responsableValidationId } },
-  //       },
-  //     });
-  //     res.json(updatedEvent);
-  //   } catch (error) {
-  //     console.error("Error validating event:", error);
-  //     res.status(500).json({ error: "An error occurred while validating event." });
-  //   }
-  // }
+  async validateEvent(req: Request, res: Response) {
+    const { eventId, responsableValidationId } = req.body;
+    try {
+      const updatedEvent = await prisma.evenement.update({
+        where: {
+          id: eventId,
+        },
+        data: {
+          responsablevalidation: { connect: { responsableValidationId } },
+        },
+      });
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error validating event:", error);
+      res.status(500).json({ error: "An error occurred while validating event." });
+    }
+  }
 
   async deleteEvent(req: Request, res: Response) {
     const { id } = req.params;
