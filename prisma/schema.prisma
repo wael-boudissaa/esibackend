@@ -10,14 +10,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-model actualite {
+model Actualite {
   id                    Int                   @id @default(autoincrement())
   idRV                  Int
+   titre                 String
+  description           String?       
+  image                 String?               
+  dateDebut             DateTime?
+  dateFin               DateTime?
   responsableValidation responsablevalidation @relation(fields: [idRV], references: [responsableValidationId], map: "Actualite_idRV_fkey")
-
+  typeActualites        TypeActualite[]
   @@index([idRV], map: "Actualite_idRV_fkey")
 }
+
+model TypeActualite {
+  idTypeActualite Int    @id @default(autoincrement())
+  idActualite     Int
+  actualite       Actualite @relation(fields: [idActualite], references: [id], map: "Actualite_typeActualite")
+  name            String
+  @@index([idActualite], map: "TypeActualite_idActualite_fkey")
+}
+
 
 model club {
   clubId  Int     @id @default(autoincrement())
@@ -131,6 +144,7 @@ model profile {
   fullname              String?
   phone                 String?
   password                String
+  image   String?
   club                  club?
   dlab                  dlab?
   dre                   dre?
@@ -230,7 +244,7 @@ model evenement {
   clubIden              Int
   club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
   responsablevalidationIden Int
-  responsablevalidation responsablevalidation @relation(fields: [responsablevalidationIden], references: [responsablevalidationId], map: "Evenement_responsablevalidationId_fkey")
+  responsablevalidation responsablevalidation @relation(fields: [responsablevalidationIden], references: [responsableValidationId], map: "Evenement_responsablevalidationId_fkey")
   titre                 String
   description           String?       
   image                 String?               
@@ -245,13 +259,29 @@ model evenement {
 model expertalumni {
   expertId        Int               @id @default(autoincrement())
   evenementalumni evenementalumni[]
+  alumniJob String 
+  alumniQuote String 
   profile         profile           @relation(fields: [expertId], references: [id], map: "expertAlumni_expertId_fkey")
 }
 
 model responsablevalidation {
   responsableValidationId Int         @id @default(autoincrement())
-  actualite               actualite[]
+  actualite               Actualite[]
   evenements evenement[]
   profile                 profile     @relation(fields: [responsableValidationId], references: [id], map: "responsableValidation_responsableValidationId_fkey")
 }
 
+
+
+
+
+
+
+
+// model page { 
+//   pageId Int @id @default((autoincrement()))
+
+// }
+// model section { 
+
+// }

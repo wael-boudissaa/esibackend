@@ -2,9 +2,12 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import profileRouter from "./routes/profileRouter";
 import emailRoute from "./routes/emailRoute";
+import events from "./routes/eventRouter";
+
 import authentificationRoute from "./routes/authentificationRoute";
 // import { v4 as uuidv4 } from "uuid";
 import partenaire from "./routes/partenaireRoute";
+
 dotenv.config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -13,11 +16,19 @@ const bodyParser = require("body-parser");
 //   return uuidv4();
 // }
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
+
+
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+
 
 app.use(
   cors({
@@ -31,6 +42,8 @@ const Mailgen = require("mailgen");
 app.use("/user", authentificationRoute);
 
 app.use("/partenaire", partenaire);
+app.use("/events",events);
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
