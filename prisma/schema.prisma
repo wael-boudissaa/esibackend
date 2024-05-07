@@ -22,6 +22,7 @@ model actualite {
 model club {
   clubId  Int     @id @default(autoincrement())
   profile profile @relation(fields: [clubId], references: [id], map: "Club_clubId_fkey")
+  evenements evenement[]
 }
 
 model demandeformateur {
@@ -224,6 +225,23 @@ model evenementalumni {
   @@index([expertAlumniId], map: "evenementAlumni_expertAlumniId_fkey")
 }
 
+model evenement {
+  id                    Int                   @id @default(autoincrement())
+  clubIden              Int
+  club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
+  responsablevalidationIden Int
+  responsablevalidation responsablevalidation @relation(fields: [responsablevalidationIden], references: [responsablevalidationId], map: "Evenement_responsablevalidationId_fkey")
+  titre                 String
+  description           String?       
+  image                 String?               
+  dateDebut             DateTime?
+  dateFin               DateTime?
+
+  @@index([clubIden], map: "Evenement_clubIden_fkey")
+  @@index([responsablevalidationIden], map: "Evenement_responsablevalidationIden_fkey")
+}
+
+
 model expertalumni {
   expertId        Int               @id @default(autoincrement())
   evenementalumni evenementalumni[]
@@ -233,6 +251,7 @@ model expertalumni {
 model responsablevalidation {
   responsableValidationId Int         @id @default(autoincrement())
   actualite               actualite[]
+  evenements evenement[]
   profile                 profile     @relation(fields: [responsableValidationId], references: [id], map: "responsableValidation_responsableValidationId_fkey")
 }
 
