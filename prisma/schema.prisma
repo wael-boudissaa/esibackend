@@ -1,7 +1,3 @@
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,6 +18,7 @@ model actualite {
 model club {
   clubId  Int     @id @default(autoincrement())
   profile profile @relation(fields: [clubId], references: [id], map: "Club_clubId_fkey")
+  evenements evenement[]
 }
 
 model demandedevis {
@@ -115,21 +112,21 @@ model evenementalumni {
   @@index([expertAlumniId], map: "EvenementAlumni_expertAlumniId_fkey")
 }
 
-// !!! hna raid
 model evenement {
   id                    Int                   @id @default(autoincrement())
-  club                  club                  @relation(fields: [clubId], references: [clubId], map: "Evenement_clubId_fkey")
-  responsablevalidation responsablevalidation @relation(fields: [idRV], references: [responsablevalidationId], map: "Evenement_responsablevalidationId_fkey")
+  clubIden                Int
+  responsablevalidationIden                   Int
+  club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
+  responsablevalidation responsablevalidation @relation(fields: [responsablevalidationIden], references: [responsablevalidationId], map: "Evenement_responsablevalidationId_fkey")
   titre                 String
   description           String?       
   image                 String?               
   dateDebut             DateTime?
   dateFin               DateTime?
 
-  @@index([clubId], map: "Evenement_clubId_fkey")
-  @@index([idRV], map: "Evenement_responsablevalidationId_fkey")
+  @@index([clubIden], map: "Evenement_clubIden_fkey")
+  @@index([responsablevalidationIden], map: "Evenement_responsablevalidationIden_fkey")
 }
-
 
 
 model expertalumni {
@@ -213,6 +210,7 @@ model responsablevalidation {
   responsablevalidationId Int         @id @default(autoincrement())
   userId                  Int
   actualite               actualite[]
+  evenements evenement[]
   profile                 profile     @relation(fields: [responsablevalidationId], references: [id], map: "ResponsableValidation_responsablevalidationId_fkey")
 }
 
