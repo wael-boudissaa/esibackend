@@ -31,27 +31,35 @@ class EventController {
       res.status(500).json({ error: "An error occurred while retrieving event." });
     }
   }
-
+  
   async createEvent(req: Request, res: Response) {
-    const { clubId,responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
+    const { clubId, responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
     try {
-      const newEvent = await prisma.evenement.create({
-        data: {
-          club: { connect: { clubId } },
-          responsablevalidation: { connect: { responsableValidationId }},
-          titre,
-          description,
-          image,
-          dateDebut,
-          dateFin,
-        },
-      });
-      res.json(newEvent);
+        const newEvent = await prisma.evenement.create({
+            data: {
+                club: {
+                    connect: {
+                        clubId: clubId
+                    }
+                },
+                responsablevalidation: {
+                    connect: {
+                        responsableValidationId: responsableValidationId
+                    }
+                },
+                titre: titre,
+                description: description,
+                image: image,
+                dateDebut: new Date(dateDebut),
+                dateFin: new Date(dateFin)
+            }
+        });
+        res.json(newEvent);
     } catch (error) {
-      console.error("Error creating event:", error);
-      res.status(500).json({ error: "An error occurred while creating event." });
+        console.error('Error creating event:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  }
+}
 
   async validateEvent(req: Request, res: Response) {
     const { eventId, responsableValidationId } = req.body;
@@ -61,7 +69,7 @@ class EventController {
           id: eventId,
         },
         data: {
-          responsablevalidation: { connect: { responsableValidationId } },
+          responsablevalidation: { connect: { responsableValidationId: responsableValidationId } },
         },
       });
       res.json(updatedEvent);
