@@ -1,6 +1,13 @@
 import express from "express";
-import eventController from "../controllers/eventController";
-const event = new eventController();
+import EventController from "../controllers/eventController";
+
 const router = express.Router();
-router.get('/all',event.getAllEvents)
-export default router
+const eventController = new EventController();
+
+router.get("/all", eventController.getAllEvents);
+router.get("/:id", eventController.getEventById);
+router.post("/create", eventController.createEvent);
+router.put("/validate", eventController.validateEvent);
+router.delete("/delete/:id", eventController.deleteEvent);
+
+export default router;

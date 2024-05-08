@@ -13,7 +13,7 @@ generator client {
 model Actualite {
   id                    Int                   @id @default(autoincrement())
   idRV                  Int
-   titre                 String
+  titre                 String
   description           String?       
   image                 String?               
   dateDebut             DateTime?
@@ -143,8 +143,8 @@ model profile {
   adresse               String?
   fullname              String?
   phone                 String?
-  password                String
-  image   String?
+  password              String
+  image                 String?
   club                  club?
   dlab                  dlab?
   dre                   dre?
