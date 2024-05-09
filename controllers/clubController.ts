@@ -30,6 +30,18 @@ export const getAllClubs = async (req: Request, res: Response) => {
     }
 };
 
+export const getActivesClubs = async (req: Request, res: Response) => {
+    try {
+        const clubs = await prisma.club.findMany({
+            where: { isActive: true }
+        });
+        res.status(200).json(clubs);
+    } catch (error) {
+        console.error('Error getting clubs:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 export const getClubById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -69,9 +81,11 @@ export const updateClub = async (req: Request, res: Response) => {
 export const deleteClub = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        await prisma.club.delete({
-            where: { clubId: parseInt(id) }
+        const deletedClub = await prisma.club.update({
+            where: { clubId: parseInt(id) },
+            data: { isActive: false}
         });
+        console.log('deleted club : ' + deletedClub);
         res.status(204).end();
     } catch (error) {
         console.error('Error deleting club:', error);

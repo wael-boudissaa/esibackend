@@ -36,6 +36,7 @@ model club {
   clubId  Int     @id @default(autoincrement())
   profile profile @relation(fields: [clubId], references: [id], map: "Club_clubId_fkey")
   evenements evenement[]
+  isActive   Boolean   @default(true)
 }
 
 model demandeformateur {
