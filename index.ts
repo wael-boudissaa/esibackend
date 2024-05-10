@@ -1,6 +1,5 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import profileRouter from "./routes/profileRouter";
 import emailRoute from "./routes/emailRoute";
 import events from "./routes/eventRoute";
 import clubs from "./routes/clubRoute";
@@ -35,11 +34,12 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: "",
+    origin: "http://localhost:3000",
     methods: "GET,POST,PATCH",
     credentials: true,
   })
 );
+
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 app.use("/user", authentificationRoute);

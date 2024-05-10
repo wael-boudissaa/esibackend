@@ -19,7 +19,7 @@ class EventController {
     try {
       const event = await prisma.evenement.findUnique({
         where: {
-          id: parseInt(id),
+          idEvenement: parseInt(id),
         },
       });
       if (!event) {
@@ -32,44 +32,44 @@ class EventController {
     }
   }
   
-  async createEvent(req: Request, res: Response) {
-    const { clubId, responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
-    try {
-        const newEvent = await prisma.evenement.create({
-            data: {
-                club: {
-                    connect: {
-                        clubId: clubId
-                    }
-                },
-                responsablevalidation: {
-                    connect: {
-                        responsableValidationId: responsableValidationId
-                    }
-                },
-                titre: titre,
-                description: description,
-                image: image,
-                dateDebut: new Date(dateDebut),
-                dateFin: new Date(dateFin)
-            }
-        });
-        res.json(newEvent);
-    } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-}
+//   async createEvent(req: Request, res: Response) {
+//     const { clubId, responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
+//     try {
+//         const newEvent = await prisma.evenement.create({
+//             data: {
+//                 club: {
+//                     connect: {
+//                         clubId: clubId
+//                     }
+//                 },
+//                 responsablevalidation: {
+//                     connect: {
+//                         responsableValidationId: responsableValidationId
+//                     }
+//                 },
+//                 titre: titre,
+//                 description: description,
+//                 image: image,
+//                 dateDebut: new Date(dateDebut),
+//                 dateFin: new Date(dateFin)
+//             }
+//         });
+//         res.json(newEvent);
+//     } catch (error) {
+//         console.error('Error creating event:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// }
 
   async validateEvent(req: Request, res: Response) {
-    const { eventId, responsableValidationId } = req.body;
+    const { eventId, idAuthor } = req.body;
     try {
       const updatedEvent = await prisma.evenement.update({
         where: {
-          id: eventId,
+          idEvenement: eventId,
         },
         data: {
-          responsablevalidation: { connect: { responsableValidationId: responsableValidationId } },
+          author: { connect: { idAuthor: idAuthor } },
         },
       });
       res.json(updatedEvent);
@@ -84,7 +84,7 @@ class EventController {
     try {
       await prisma.evenement.delete({
         where: {
-          id: parseInt(id),
+          idEvenement: parseInt(id),
         },
       });
       res.sendStatus(204);

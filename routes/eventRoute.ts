@@ -6,7 +6,7 @@ const eventController = new EventController();
 
 router.get("/all", eventController.getAllEvents);
 router.get("/:id", eventController.getEventById);
-router.post("/create", eventController.createEvent);
+// router.post("/create", eventController.createEvent);
 router.put("/validate", eventController.validateEvent);
 router.delete("/delete/:id", eventController.deleteEvent);
 

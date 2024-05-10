@@ -6,47 +6,47 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-export const createUser = async (
-  email: string,
-  password: string,
-  fullname: string,
-  phone: string,
-  address: string,
-  type: string
-) => {
-  try {
-    const ROUND: number = process.env.KEY_ROUND
-      ? parseInt(process.env.KEY_ROUND, 10)
-      : 10;
-    const passwordC = await bcrypt.hash(password, ROUND);
+// export const createUser = async (
+//   email: string,
+//   password: string,
+//   fullname: string,
+//   phone: string,
+//   address: string,
+//   type: string
+// ) => {
+//   try {
+//     const ROUND: number = process.env.KEY_ROUND
+//       ? parseInt(process.env.KEY_ROUND, 10)
+//       : 10;
+//     const passwordC = await bcrypt.hash(password, ROUND);
 
-    const createProfile = await prisma.profile.create({
-      data: {
-        email: email,
-        password: passwordC,
-        fullname: fullname,
-        phone: phone,
-        adresse: address,
-      },
-    });
+//     const createProfile = await prisma.profile.create({
+//       data: {
+//         email: email,
+//         password: passwordC,
+//         fullname: fullname,
+//         phone: phone,
+//         adresse: address,
+//       },
+//     });
 
-    if (type === "partenaire") {
-      const createPartenaire = await prisma.partenaire.create({
-        data: {
-          profile: {
-            connect: { id: createProfile.id }, // Link to the created profile
-          },
-        },
-      });
-      return createPartenaire;
-    } else {
-      return createProfile;
-    }
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw error;
-  }
-};
+//     if (type === "partenaire") {
+//       const createPartenaire = await prisma.partenaire.create({
+//         data: {
+//           profile: {
+//             connect: { id: createProfile.id }, // Link to the created profile
+//           },
+//         },
+//       });
+//       return createPartenaire;
+//     } else {
+//       return createProfile;
+//     }
+//   } catch (error) {
+//     console.error("Error creating user:", error);
+//     throw error;
+//   }
+// };
 
 class partenaireController {
   async postDemandePartenaire(req: Request, res: Response) {
@@ -74,7 +74,7 @@ class partenaireController {
       const demandePartenaire = await prisma.demandepartenaire.create({
         data: {
           status: status,
-          visitor: { connect: { id: visitor.id } },
+          visitor: { connect: { idVisitor: visitor.idVisitor } },
         },
       });
 
@@ -90,24 +90,24 @@ class partenaireController {
       res.json(getDP);
     } catch (err) {}
   }
-  async DemandePartenaireAccepte(req: Request, res: Response) {
-    try {
-      const { id, email, fullname, phone, address } = req.body;
-      const demandeAccepte = await prisma.demandepartenaire.update({
-        where: {
-          id: id,
-        },
-        data: {
-          status: "true",
-        },
-      });
-      const password = generateRandomPassword();
-      let sendEmail = new emailController(email, password);
-      await createUser(email, password, fullname, phone, address, "partenaire");
-      await sendEmail.generateMail(req, res);
-    } catch (err) {
-      console.error("Error updating demande partenaire:", err);
-    }
-  }
+  // async DemandePartenaireAccepte(req: Request, res: Response) {
+  //   try {
+  //     const { id, email, fullname, phone, address } = req.body;
+  //     const demandeAccepte = await prisma.demandepartenaire.update({
+  //       where: {
+  //         idDemandePartenaire: id,
+  //       },
+  //       data: {
+  //         status: "true",
+  //       },
+  //     });
+  //     const password = generateRandomPassword();
+  //     let sendEmail = new emailController(email, password);
+  //     await createUser(email, password, fullname, phone, address, "partenaire");
+  //     await sendEmail.generateMail(req, res);
+  //   } catch (err) {
+  //     console.error("Error updating demande partenaire:", err);
+  //   }
+  // }
 }
 export default partenaireController;

@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.patch("/demande", partenaire.postDemandePartenaire);
 router.get("/demande", partenaire.getDemandePatenaire);
-router.post("/demande", partenaire.DemandePartenaireAccepte);
+// router.post("/demande", partenaire.DemandePartenaireAccepte);
 
 export default router;
