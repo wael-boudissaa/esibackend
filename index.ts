@@ -5,6 +5,7 @@ import emailRoute from "./routes/emailRoute";
 import events from "./routes/eventRoute";
 import clubs from "./routes/clubRoute";
 
+import actualite from "./routes/actualiteRouter";
 
 import authentificationRoute from "./routes/authentificationRoute";
 // import { v4 as uuidv4 } from "uuid";
@@ -46,6 +47,7 @@ app.use("/user", authentificationRoute);
 app.use("/partenaire", partenaire);
 app.use("/events",events);
 app.use("/clubs",clubs);
+app.use("/actualite",actualite);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

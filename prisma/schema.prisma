@@ -1,3 +1,11 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// generator dbml {
+//   provider = "prisma-dbml-generator"
+// }
+
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
@@ -6,29 +14,28 @@ datasource db {
 // generator dbml {
 //   provider = "prisma-dbml-generator"
 // }
-generator client {
-  provider = "prisma-client-js"
-}
+
+
+
 
 model Actualite {
-  id                    Int                   @id @default(autoincrement())
+  id                    Int             @id @default(autoincrement())
   idRV                  Int
   titre                 String
   description           String?       
   image                 String?               
   dateDebut             DateTime?
   dateFin               DateTime?
-  responsableValidation responsablevalidation @relation(fields: [idRV], references: [responsableValidationId], map: "Actualite_idRV_fkey")
-  typeActualites        TypeActualite[]
+  idType                Int      
+  responsableValidation responsablevalidation @relation(fields: [idRV], references: [responsableValidationId])
   @@index([idRV], map: "Actualite_idRV_fkey")
+  typeActualite         TypeActualite   @relation(fields: [idType], references: [id])
 }
 
 model TypeActualite {
-  idTypeActualite Int    @id @default(autoincrement())
-  idActualite     Int
-  actualite       Actualite @relation(fields: [idActualite], references: [id], map: "Actualite_typeActualite")
+  id Int         @id @default(autoincrement())
+  actualites      Actualite[] // Use plural form for relation field name
   name            String
-  @@index([idActualite], map: "TypeActualite_idActualite_fkey")
 }
 
 
