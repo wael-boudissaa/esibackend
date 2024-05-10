@@ -7,16 +7,13 @@ import clubs from "./routes/clubRoute";
 import actualite from "./routes/actualiteRouter";
 
 import authentificationRoute from "./routes/authentificationRoute";
-// import { v4 as uuidv4 } from "uuid";
 import partenaire from "./routes/partenaireRoute";
 
 dotenv.config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-// export function generateId(): string {
-//   return uuidv4();
-// }
+
 const app: Express = express();
 const port = process.env.PORT || 3000;
 

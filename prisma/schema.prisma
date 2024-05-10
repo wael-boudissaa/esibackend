@@ -6,7 +6,6 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  relationMode = "prisma"
 }
 
 
@@ -170,6 +169,8 @@ model formation {
   theme       theme         @relation(fields: [idTheme], references: [idTheme], map: "Formation_themeId_fkey")
   // participant participant[]
   formateur   formateur[]   @relation("Formateurs_Formations")
+  
+
 
 }
 
