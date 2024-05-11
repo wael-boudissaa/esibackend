@@ -27,6 +27,8 @@
     phone                 String?
     password              String
     image                 String?
+    last_login DateTime
+    refreshToken  String?
     type                  ProfileType
     author              author? 
     club                club? 
