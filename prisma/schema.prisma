@@ -1,217 +1,247 @@
-generator client {
-  provider = "prisma-client-js"
-}
+// generator client {
+//   provider = "prisma-client-js"
+// }
 
 
-datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-}
+// datasource db {
+//   provider     = "mysql"
+//   url          = env("DATABASE_URL")
+//     relationMode = "prisma"
+
+// }
+
+  generator client {
+    provider = "prisma-client-js"
+  }
+
+  datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+  }
+
+  model profile {
+    id                    Int                    @id @default(autoincrement())
+    email                 String                 @unique(map: "Profile_email_key")
+    adresse               String?
+    fullname              String?
+    phone                 String?
+    password              String
+    image                 String?
+    type                  ProfileType
+    author              author? 
+    club                club? 
+    // dlab                  dlab?
+    // dre                   dre?
+    alumni          alumni?
+    // partenaire            partenaire?
+    // student               student?
+  }
 
 
-model profile {
-  id                    Int                    @id @default(autoincrement())
-  email                 String                 @unique(map: "Profile_email_key")
-  adresse               String?
-  fullname              String?
-  phone                 String?
-  password              String
-  image                 String?
-  type                  ProfileType
-  author              author ? 
-  club                club ? 
-  // dlab                  dlab?
-  // dre                   dre?
-  alumni          alumni?
-  // partenaire            partenaire?
-  // student               student?
-}
+  enum ProfileType {
+    club
+    author
+    alumni
+  }
+
+  model club { 
+    idClub Int @id 
+    profile  profile @relation(fields: [idClub], references: [id], map:"club_profile_fkey")
+  }
 
 
-enum ProfileType {
-  club
-  author
-  alumni
-}
-
-model club { 
-  idClub Int @id @default(autoincrement())
-  profileId Int @unique
-  profile  profile @relation(fields: [profileId], references: [id], map:"club_profile_fkey")
-}
+  model author {
+    idAuthor Int         @id 
+    actualite               Actualite[]
+    evenements evenement[]
+    profile                 profile     @relation(fields: [idAuthor], references: [id], map: "profile_author_fkey")
+  }
 
 
-model author {
-  idAuthor Int         @id @default(autoincrement())
-  actualite               Actualite[]
-  evenements evenement[]
-  profileId Int @unique
-  profile                 profile     @relation(fields: [profileId], references: [id], map: "profile_author_fkey")
-}
-
-
-model alumni {
-  idAlumni        Int               @id @default(autoincrement())
-  evenementalumni evenementalumni[]
-  alumniJob String 
-  alumniQuote String
-  profileId Int @unique
-  profile         profile          @relation(fields: [profileId], references: [id], map: "alumni_profile_fkey")
-}
+  model alumni {
+    idAlumni        Int              @id
+    evenementalumni evenementalumni[]
+    alumniJob String 
+    alumniQuote String
+    profile         profile          @relation(fields: [idAlumni], references: [id], map: "alumni_profile_fkey")
+  }
 
 
 
-// !!!!! ALLL PROFILES TILL NOW 
-model TypeActualite {
-  idTypeActualite Int         @id @default(autoincrement())
-  actualites      Actualite[] // Use plural form for relation field name
-  name            String
-}
+  // !!!!! ALLL PROFILES TILL NOW 
+  model TypeActualite {
+    idTypeActualite Int         @id @default(autoincrement())
+    actualites      Actualite[] // Use plural form for relation field name
+    name            String
+  }
 
-//!!! Actualite 
+  //!!! Actualite 
 
-model Actualite {
-  idActualite                    Int             @id @default(autoincrement())
-  idAuthor                  Int 
-  titre                 String
-  description           String?       
-  image                 String?               
-  date             DateTime?
-  idType                Int       
-  author author @relation(fields: [idAuthor], references: [idAuthor] , map:"author_actualite_fkey")
-  typeActualite         TypeActualite   @relation(fields: [idType], references: [idTypeActualite] , map: "typeActualiteActualite")
-}
-
-
-//!!! evenement
-model evenement {
-  idEvenement                    Int                   @id @default(autoincrement())
-  // clubIden              Int
-  // club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
-  idAuthor Int 
-  author author @relation(fields: [idAuthor], references: [idAuthor], map: "Evenement_author_fkey")
-  titre                 String
-  description           String?       
-  image                 String?               
-  date             DateTime?
-}
-
-//!!!! EVENEMENT ALUMNI
-
-model evenementalumni {
-  idEvenementAlumni             Int          @id @default(autoincrement())
-  idAlumni Int 
-  titre                 String
-  description           String?       
-  image                 String?               
-  date             DateTime?
-  alumni   alumni @relation(fields: [idAlumni], references: [idAlumni], map: "evenementAlumni_AlumniId_fkey")
-  visitor        visitor[]    @relation("inscription")
-}
-
-//!! VISITOR 
+  model Actualite {
+    idActualite                    Int             @id @default(autoincrement())
+    idAuthor                  Int 
+    titre                 String
+    description           String?       
+    image                 String?               
+    date             DateTime?
+    idType                Int       
+    author author @relation(fields: [idAuthor], references: [idAuthor] , map:"author_actualite_fkey")
+    typeActualite         TypeActualite   @relation(fields: [idType], references: [idTypeActualite] , map: "typeActualiteActualite")
+  }
 
 
-model visitor {
-  idVisitor                 Int                   @id @default(autoincrement())
-  email               String                @unique(map: "Visitor_email_key")
-  fullname            String
-  address               String?
-  phone               String
-  demandedevis        demandedevis[]
-  // demandeemploi       demandeemploi[]
-  demandeformateur    demandeformateur[]
-  demandepartenaire   demandepartenaire[]
-  // demandeprojetfablab demandeprojetfablab[]
-  demandevisite       demandevisite[]
-  evenementAlumni     evenementalumni[]     @relation("inscription")
-}
+  //!!! evenement
+  model evenement {
+    idEvenement                    Int                   @id @default(autoincrement())
+    // clubIden              Int
+    // club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
+    idAuthor Int 
+    author author @relation(fields: [idAuthor], references: [idAuthor], map: "Evenement_author_fkey")
+    titre                 String
+    description           String?       
+    image                 String?               
+    date             DateTime?
+  }
+
+  //!!!! EVENEMENT ALUMNI
+
+  model evenementalumni {
+    idEvenementAlumni             Int          @id @default(autoincrement())
+    idAlumni Int 
+    titre                 String
+    description           String?       
+    image                 String?               
+    date             DateTime?
+    alumni   alumni @relation(fields: [idAlumni], references: [idAlumni], map: "evenementAlumni_AlumniId_fkey")
+    visitor        Inscription[]    
+  }
+
+  //!! VISITOR 
+
+ model Inscription {
+  visitor visitor @relation(fields: [visitorId] , references: [idVisitor])
+  visitorId Int 
+  evenementAlumni evenementalumni @relation(fields: [evenementAlumniId] , references: [idEvenementAlumni])
+  evenementAlumniId Int 
+
+  @@id([visitorId,evenementAlumniId])
+ }
+  model visitor {
+    idVisitor                 Int                   @id @default(autoincrement())
+    email               String                @unique(map: "Visitor_email_key")
+    fullname            String
+    address               String?
+    phone               String
+    demandedevis        demandedevis[]
+    // demandeemploi       demandeemploi[]
+    demandeformateur    demandeformateur[]
+    demandepartenaire   demandepartenaire[]
+    // demandeprojetfablab demandeprojetfablab[]
+    demandevisite       demandevisite[]
+    evenementAlumni     Inscription[]     
+    ticket              ticket[]
+  }
 
 
-model demandedevis {
-  idDemandeDevis        Int     @id @default(autoincrement())
-  status    String
-  idVisitor Int
-  visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandeDevis_visitorId_fkey")
+  model demandedevis {
+    idDemandeDevis        Int     @id @default(autoincrement())
+    status    String
+    idVisitor Int
+    visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandeDevis_visitorId_fkey")
 
-}
+  }
 
-model demandepartenaire {
-  idDemandePartenaire        Int     @id @default(autoincrement())
-  status    String
-  idVisitor Int
-  visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandePartenaire_visitorId_fkey")
+  model demandepartenaire {
+    idDemandePartenaire        Int     @id @default(autoincrement())
+    status    String
+    idVisitor Int
+    visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandePartenaire_visitorId_fkey")
 
-}
+  }
 
-model demandevisite {
-  idDemandeVisite        Int     @id @default(autoincrement())
-  status    String
-  idVisitor Int
-  visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeVisite_visitorId_fkey")
+  model demandevisite {
+    idDemandeVisite        Int     @id @default(autoincrement())
+    status    String
+    idVisitor Int
+    visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeVisite_visitorId_fkey")
 
-}
+  }
 
-model demandeformateur {
-  idDemandeFormateur        Int     @id @default(autoincrement())
-  status    String
-  idVisitor Int
-  visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeFormateur_visitorId_fkey")
+  model demandeformateur {
+    idDemandeFormateur        Int     @id @default(autoincrement())
+    status    String
+    idVisitor Int
+    visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeFormateur_visitorId_fkey")
 
-}
+  }
 
-model formation {
-  idFormation          Int           @id @default(autoincrement())
-  idDomaine   Int
-  idTheme     Int          
-  // evaluation  evaluation[]
-  domaine     domaine       @relation(fields: [idDomaine], references: [idDomaine], map: "Formation_domaineId_fkey")
-  theme       theme         @relation(fields: [idTheme], references: [idTheme], map: "Formation_themeId_fkey")
-  // participant participant[]
-  formateur   formateur[]   @relation("Formateurs_Formations")
-  
-
-
-}
-
-model formateur {
-  idFormateur        Int         @id @default(autoincrement())
-  formation formation[] @relation("Formateurs_Formations")
-}
-
-model theme {
-  idTheme        Int        @id @default(autoincrement())
-  nomTheme  String
-  description String 
-  idDomaine Int
-  domaine domaine @relation(fields: [idDomaine],references: [idDomaine] , map:"Theme_Domaine_fkey")
-  formation formation[]
-}
-
-model domaine {
-  idDomaine         Int         @id @default(autoincrement())
-  nomDomaine String
-  theme     theme[]
-  formation  formation[]
-}
+  model formation {
+    idFormation          Int           @id @default(autoincrement())
+    idDomaine   Int
+    idTheme     Int          
+    // evaluation  evaluation[]
+    domaine     domaine       @relation(fields: [idDomaine], references: [idDomaine], map: "Formation_domaineId_fkey")
+    theme       theme         @relation(fields: [idTheme], references: [idTheme], map: "Formation_themeId_fkey")
+    // participant participant[]
+    formateur   FormationFormateur[]   
+    
 
 
-//!!!! Ticket COntact 
+  }
+
+  model formateur {
+    idFormateur        Int         @id @default(autoincrement())
+    formation FormationFormateur[]
+  }
+
+ model FormationFormateur {
+  formation formation @relation(fields: [formationId] , references: [idFormation])
+  formationId Int 
+  formateur formateur @relation(fields: [formateurId] , references: [idFormateur])
+  formateurId Int 
+
+  @@id([formateurId,formationId])
+ }
+  model theme {
+    idTheme        Int        @id @default(autoincrement())
+    nomTheme  String
+    description String 
+    idDomaine Int
+    domaine domaine @relation(fields: [idDomaine],references: [idDomaine] , map:"Theme_Domaine_fkey")
+    formation formation[]
+  }
+
+  model domaine {
+    idDomaine         Int         @id @default(autoincrement())
+    nomDomaine String
+    theme     theme[]
+    formation  formation[]
+  }
 
 
-model ticket {
-  idTicket      Int       @id @default(autoincrement())
-  title   String
-  message message[]
-}
+  //!!!! Ticket COntact 
 
 
-model message {
-  idMessage       Int    @id @default(autoincrement())
-  message  String
-  idTicket Int
-  ticket   ticket @relation(fields: [idTicket], references: [idTicket], map: "Message_ticketId_fkey")
+  model ticket {
+    idTicket      Int       @id @default(autoincrement())
+    title   String
+    message message[]
+    idVisitor Int
+    visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "Ticket_visitorId_fkey")
 
-}
+  }
 
+
+  model message {
+    idMessage       Int    @id @default(autoincrement())
+    message  String
+    idTicket Int
+    ticket   ticket @relation(fields: [idTicket], references: [idTicket], map: "Message_ticketId_fkey")
+
+  }
+
+
+// generator dbml {
+//   provider = "prisma-dbml-generator"
+// }
 
