@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const multer = require("multer");
 const upload = multer({ storage });
 const app: Express = express();
-interface MulterRequest extends Request {
+export interface MulterRequest extends Request {
   file: any;
 }
 
@@ -27,7 +27,7 @@ class ActualiteController {
         .json({ error: "An error occurred while retrieving actualites." });
     }
   }
-
+  //!!! ACTUALITE CREATE
   async createActuailte(req: Request, res: Response) {
     const {
       titre,
@@ -46,7 +46,6 @@ class ActualiteController {
     } = req.body;
     const imaget = (req as MulterRequest).file.path;
 
-    console.log(imaget);
     const parsedAuthorId = parseInt(authorId);
     const parsedTypeId = parseInt(typeId);
     try {

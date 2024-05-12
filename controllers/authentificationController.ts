@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { profile } from "console";
 import { PrismaClient } from "@prisma/client";
+import { MulterRequest } from "./actualiteController";
 const prisma = new PrismaClient();
 
 // interface JwtOptions {
@@ -11,12 +12,12 @@ const prisma = new PrismaClient();
 const jwtSecret: string =
   (process.env.JWT_SECRET as string) || "1VSDQ44BR6ER6486T1E61QNT6NT46N84Q";
 
-  const jwtOptionsAcces: jwt.SignOptions = {
-    expiresIn: "1h",
-  };
-  const jwtOptionsRefresh: jwt.SignOptions = {
-    expiresIn: "10h",
-  };
+const jwtOptionsAcces: jwt.SignOptions = {
+  expiresIn: "1h",
+};
+const jwtOptionsRefresh: jwt.SignOptions = {
+  expiresIn: "10h",
+};
 // const createAccesToken = (id: string, type: string) => {
 //   return jwt.sign({ id: id, type: type }, "accesbaba", { expiresIn: "15min" });
 // };
@@ -28,35 +29,31 @@ const jwtSecret: string =
 //   };
 // };
 
-
-
 interface RequestBody {
   email: string;
   password: string;
 }
-
-
 interface RequestBodyCreateUser {
   email: string;
   password: string;
   fullname: string;
-  address:string;
-  phone:string;
-  image: string ; 
-  type:string;
-  last_login:string;
+  address: string;
+  phone: string;
+  image: string;
+  type: ProfileType;
+  last_login: string;
 }
+enum ProfileType {
+  CLUB = "club",
+  AUTHOR = "author",
+  ALUMNI = "alumni",
+}
+
 const ROUND: number = process.env.KEY_ROUND
   ? parseInt(process.env.KEY_ROUND, 10)
   : 10;
 
-
-
-
 export class authentificationController {
-
-
-
   async login(req: Request, resp: Response) {
     const { email, password }: RequestBody = req.body;
 
@@ -83,32 +80,35 @@ export class authentificationController {
       // !!!! Verifier si mot passe juste
 
       if (hashPassword) {
-
-        
-        const Refreshtoken = jwt.sign({ email: email }, jwtSecret, jwtOptionsRefresh);
-        const AcessToken = jwt.sign({ email: email }, jwtSecret, jwtOptionsAcces);
+        const Refreshtoken = jwt.sign(
+          { email: email },
+          jwtSecret,
+          jwtOptionsRefresh
+        );
+        const AcessToken = jwt.sign(
+          { email: email },
+          jwtSecret,
+          jwtOptionsAcces
+        );
 
         const updateUser = await prisma.profile.update({
           where: { email: email }, // Specify the condition to find the user
           data: {
             refreshToken: Refreshtoken,
-            last_login: new Date() // Use new Date() to get the current date and time
-          }
+            last_login: new Date(), // Use new Date() to get the current date and time
+          },
         });
-        
+
         //!! Generate A new token and Sign in with update the user information ((date derniere inscription ))
         // console.log(updateUser);
         resp.cookie("token", AcessToken, { httpOnly: true, secure: true });
-        resp.status(200).send({ message: "Login successful" , AcessToken});
-      } 
-      
-      else {
+        resp.status(200).send({ message: "Login successful", AcessToken });
+      } else {
         resp
           .status(200)
           .send({ message: "password does not match", hashPassword });
       }
 
-      
       //!! Verifier password
       // ??? Update refresh token on the database and create new acces token
     } catch (error) {
@@ -116,34 +116,42 @@ export class authentificationController {
       return resp.status(500).send({ message: "Internal server error" });
     }
   }
-  async createUser (req: Request, resp: Response) {
-    const { email, password,fullname,address,phone,image,type,last_login}: RequestBodyCreateUser = req.body;
-  
+
+  async createUser(req: Request, resp: Response) {
+    const {
+      email,
+      password,
+      fullname,
+      address,
+      phone,
+      image,
+      type,
+      last_login,
+    }: RequestBodyCreateUser = req.body;
+
     try {
+      const imaget = (req as MulterRequest).file.path;
+
       if (!email) {
         throw new Error("Please enter an email address");
       }
-  
+
       if (!password) {
         throw new Error("Please enter a password");
       }
-  
+
       const newPassword = await bcrypt.hash(password, ROUND);
-  
+
       const existingUser = await prisma.profile.findUnique({
         where: {
-          email: email
-        }
+          email: email,
+        },
       });
-  
+
       if (existingUser) {
         throw new Error("Email already in use");
       }
-  
-    
-  
-  
-  
+
       // Create a new user
       const newUser = await prisma.profile.create({
         data: {
@@ -152,14 +160,15 @@ export class authentificationController {
           fullname: fullname,
           phone: phone,
           adresse: address,
-          image: image,
-          type: 'author',
+          image: imaget,
+          type: type,
           last_login: last_login,
-        }
+        },
       });
-      
-    
-      resp.status(200).send({ message: `The ${newUser.email} is connected successfully` });
+
+      resp
+        .status(200)
+        .send({ message: `The ${newUser.email} is connected successfully` });
       console.log("User saved");
     } catch (error) {
       resp.status(400).send({ message: error });
@@ -167,36 +176,30 @@ export class authentificationController {
     } finally {
       await prisma.$disconnect(); // Disconnect Prisma client
     }
-  };
-  async getUsers (req:Request,resp:Response){
-    try { 
-      const getUsers = await prisma.profile.findMany()
-      resp.status(200).json(getUsers)
-    }
-    catch(err)
-    {
+  }
+  async getUsers(req: Request, resp: Response) {
+    try {
+      const getUsers = await prisma.profile.findMany();
+      resp.status(200).json(getUsers);
+    } catch (err) {
       throw err;
     }
-   
-
   }
 
- 
-
-  async updateTokens  (req: Request, resp: Response)  {
+  async updateTokens(req: Request, resp: Response) {
     const { email }: { email: string } = req.body;
-  
+
     try {
       // Retrieve the refresh token from the database
       const refreshTokenResult = await prisma.profile.findUnique({
         where: {
           email: email,
         },
-        select:{
-          refreshToken:true
-        }
+        select: {
+          refreshToken: true,
+        },
       });
-  
+
       // If no refresh token found, respond with error
       if (!refreshTokenResult) {
         return resp.status(403).json({ error: "" });
@@ -205,23 +208,31 @@ export class authentificationController {
         return resp.status(403).json({ error: "Refresh token not found" });
       }
 
-      const refreshToken  =  refreshTokenResult.refreshToken;
-      console.log(refreshToken)
+      const refreshToken = refreshTokenResult.refreshToken;
+      console.log(refreshToken);
 
-       jwt.verify(refreshToken, jwtSecret, async (err, decoded) => {
+      jwt.verify(refreshToken, jwtSecret, async (err, decoded) => {
         if (err) {
           if (err.name === "TokenExpiredError") {
             console.log("Refresh token has expired");
-            return resp.status(403).json({ error: "Refresh token has expired" });
+            return resp
+              .status(403)
+              .json({ error: "Refresh token has expired" });
           } else {
             console.error("Refresh token verification error:", err.message);
-            return resp.status(403).json({ error: "Refresh token verification error" });
+            return resp
+              .status(403)
+              .json({ error: "Refresh token verification error" });
           }
         }
-  
+
         // If refresh token is valid, generate a new access token
-        const newAccessToken = jwt.sign({ email: email }, jwtSecret, jwtOptionsAcces);
-  
+        const newAccessToken = jwt.sign(
+          { email: email },
+          jwtSecret,
+          jwtOptionsAcces
+        );
+
         // Send the new access token in the response
         resp.status(200).json({ accessToken: newAccessToken });
       });
@@ -229,14 +240,7 @@ export class authentificationController {
       console.error("Error fetching refresh token from database:", error);
       resp.status(500).json({ error: "Internal server error" });
     }
-  };
-    }
+  }
+}
 
-
-
-
-  
-
-  //     // Verify the refresh token
-
-  
+//     // Verify the refresh token

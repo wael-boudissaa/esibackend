@@ -150,6 +150,7 @@
     idDemandeDevis        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+     createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandeDevis_visitorId_fkey")
 
   }
@@ -158,6 +159,7 @@
     idDemandePartenaire        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+     createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandePartenaire_visitorId_fkey")
 
   }
@@ -166,6 +168,7 @@
     idDemandeVisite        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+     createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeVisite_visitorId_fkey")
 
   }
@@ -174,6 +177,7 @@
     idDemandeFormateur        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+     createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeFormateur_visitorId_fkey")
 
   }
