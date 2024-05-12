@@ -31,4 +31,3 @@ router.patch("/visite", demandeVisite.PatchDemandeVisite);
 // router.post("/create", upload.single("image"), event.createActuailte);
 
 export default router;
-c
