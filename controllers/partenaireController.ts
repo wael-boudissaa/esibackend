@@ -49,6 +49,7 @@ const prisma = new PrismaClient();
 // };
 
 class partenaireController {
+  
   async postDemandePartenaire(req: Request, res: Response) {
     try {
       const { email, fullname, phone, address } = req.body;

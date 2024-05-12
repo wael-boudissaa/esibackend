@@ -27,7 +27,7 @@
     phone                 String?
     password              String
     image                 String?
-    last_login DateTime
+    last_login DateTime?
     refreshToken  String?
     type                  ProfileType
     author              author? 
@@ -49,6 +49,7 @@
   model club { 
     idClub Int @id 
     profile  profile @relation(fields: [idClub], references: [id], map:"club_profile_fkey")
+    // evenement evenement[]
   }
 
 
@@ -95,8 +96,8 @@
   //!!! evenement
   model evenement {
     idEvenement                    Int                   @id @default(autoincrement())
-    // clubIden              Int
-    // club                  club                  @relation(fields: [clubIden], references: [clubId], map: "Evenement_clubId_fkey")
+    // clubIden              Int?
+    // club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
     idAuthor Int 
     author author @relation(fields: [idAuthor], references: [idAuthor], map: "Evenement_author_fkey")
     titre                 String
