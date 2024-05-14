@@ -23,6 +23,9 @@
     author
     alumni
   }
+    generator dbml {
+  provider = "prisma-dbml-generator"
+}
 
 
   model profile {
@@ -54,6 +57,8 @@
       dre DRE?
       administrator Administrator?
       responsableEvenenement responsableEvenement?
+      evenement evenement[]
+      actualite Actualite[]
     profile                 profile     @relation(fields: [idProfile], references: [id], map: "profile_author_fkey")
   }
   model DRE {
@@ -73,14 +78,14 @@
     idReseponsableEvenement Int @id 
     author  author @relation(fields: [idReseponsableEvenement], references: [idAuthor], map:"ResponsableEvenement_profile_fkey")
     evenement  Validate_Evenement_ResponsableEvenement[]
-    evenementClub  Validate_EvenementClub_ResponsableEvenement[]
+    // evenementClub  Validate_Evenement_ResponsableEvenement[]
 
   }
 
   model club { 
     idClub Int @id 
     author  author @relation(fields: [idClub], references: [idAuthor], map:"club_profile_fkey")
-    // evenement evenement[]
+    // evenementClub evenement[]
   }
 
   model alumni {
@@ -103,14 +108,15 @@
   //!!! Actualite 
   model Actualite {
     idActualite                    Int             @id @default(autoincrement())
-    idAdministrator                  Int 
     titre                 String
     description           String?       
     image                 String?               
     date             DateTime?
     file      String?
     idType                Int   
-    status            String     
+    status            String 
+    idAuthor  Int
+    author author @relation(fields: [idAuthor], references: [idAuthor], map:"CREATE_AUTHOR_Actualite")    
     Administrator Validate_Actualite_Administrator[]
     typeActualite         TypeActualite   @relation(fields: [idType], references: [idTypeActualite] , map: "typeActualiteActualite")
   }
@@ -127,35 +133,36 @@
       @@id([actualiteId,AdministratorId])
 
   }
-  model evenementClub {
-    idEvenementClub                   Int                   @id @default(autoincrement())
-    // clubIden              Int?
-    // club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
-    responsableEVenement Validate_EvenementClub_ResponsableEvenement[]
-    titre                 String
-    description           String?       
-    image                 String?  
-    status            String             
-    date             DateTime?
-  }
+  // model evenementClub {
+  //   idEvenementClub                   Int                   @id @default(autoincrement())
+  //   clubIden              Int
+  //   club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
+  //   responsableEVenement Validate_EvenementClub_ResponsableEvenement[]
+  //   titre                 String
+  //   description           String?       
+  //   image                 String?  
+  //   status            String             
+  //   date             DateTime?
+  // }
 
 
-  model Validate_EvenementClub_ResponsableEvenement{
-    responsableEvenementId Int 
-    evenementId Int 
-    ValidatedAt            DateTime @default(now())
+  // model Validate_EvenementClub_ResponsableEvenement{
+  //   responsableEvenementId Int 
+  //   evenementId Int 
+  //   ValidatedAt            DateTime @default(now())
 
-    evenementClub evenementClub @relation(fields: [evenementId], references: [idEvenementClub],map:"validation_evenementClub")
-    responsableEvenement responsableEvenement @relation(fields: [responsableEvenementId],references: [idReseponsableEvenement],map:"validationClub_parResponsabl")
-      @@id([evenementId,responsableEvenementId])
+  //   evenementClub evenementClub @relation(fields: [evenementId], references: [idEvenementClub],map:"validation_evenementClub")
+  //   responsableEvenement responsableEvenement @relation(fields: [responsableEvenementId],references: [idReseponsableEvenement],map:"validationClub_parResponsabl")
+  //     @@id([evenementId,responsableEvenementId])
 
-  }
+  // }
 
   //!!! evenement
   model evenement {
     idEvenement                    Int                   @id @default(autoincrement())
-    // clubIden              Int?
-    // club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
+    idAuthor Int
+    author author @relation(fields: [idAuthor], references: [idAuthor], map:"CREATE_Author_Evenement")    
+
     responsableEveneemnt Validate_Evenement_ResponsableEvenement[]
     titre                 String
     description           String?       
