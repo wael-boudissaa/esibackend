@@ -108,6 +108,7 @@
     description           String?       
     image                 String?               
     date             DateTime?
+    file      String?
     idType                Int   
     status            String     
     Administrator Validate_Actualite_Administrator[]
