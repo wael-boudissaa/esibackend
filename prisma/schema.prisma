@@ -20,8 +20,10 @@
   }
     enum ProfileType {
     club
-    author
-    alumni
+    responsableEveneemnt
+    administrator
+    dre
+
   }
     generator dbml {
   provider = "prisma-dbml-generator"
@@ -128,6 +130,7 @@
     actualiteId Int 
          ValidatedAt            DateTime @default(now())
 
+
     actualite Actualite @relation(fields: [actualiteId], references: [idActualite],map:"validation_actualite")
     administrator Administrator @relation(fields: [AdministratorId],references: [idAdministrator],map:"validation_parAdministrator")
       @@id([actualiteId,AdministratorId])
@@ -231,7 +234,6 @@ model DemandeDevis_DRE {
     idDemandeDevis        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
-    idDRE Int 
     dre DemandeDevis_DRE[]
      createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandeDevis_visitorId_fkey")

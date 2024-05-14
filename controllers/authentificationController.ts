@@ -44,9 +44,10 @@ interface RequestBodyCreateUser {
   last_login: string;
 }
 enum ProfileType {
-  CLUB = "club",
-  AUTHOR = "author",
-  ALUMNI = "alumni",
+  club = "club",
+  responsableEveneemnt = "responsableEveneemnt",
+  administrator = "administrator",
+  dre = "dre",
 }
 
 const ROUND: number = process.env.KEY_ROUND

@@ -9,5 +9,6 @@ const router = express.Router();
 router.get("/all", event.getAllActualite);
 
 router.post("/create", upload.single("image"), event.createActuailte);
+router.put("/update", upload.single("image"), event.ValidateActualite);
 
 export default router;

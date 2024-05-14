@@ -48,17 +48,41 @@ class ActualiteController {
 
     const parsedAuthorId = parseInt(authorId);
     const parsedTypeId = parseInt(typeId);
+
     try {
-      const actualite = await prisma.actualite.create({
-        data: {
-          author: { connect: { idAuthor: parsedAuthorId } },
-          typeActualite: { connect: { idTypeActualite: parsedTypeId } },
-          titre: titre,
-          description: description,
-          image: imaget,
-          date: date,
-        },
+      const author = await prisma.author.findUnique({
+        where: { idAuthor: parsedAuthorId },
+        include: { profile: true },
       });
+
+      let actualite: any;
+
+      if (author?.profile.type == "administrator") {
+        actualite = await prisma.actualite.create({
+          data: {
+            author: { connect: { idAuthor: parsedAuthorId } },
+            typeActualite: { connect: { idTypeActualite: parsedTypeId } },
+            titre: titre,
+            description: description,
+            status: "accepted",
+            image: imaget,
+            date: date,
+          },
+        });
+      } else {
+        actualite = await prisma.actualite.create({
+          data: {
+            author: { connect: { idAuthor: parsedAuthorId } },
+            typeActualite: { connect: { idTypeActualite: parsedTypeId } },
+            titre: titre,
+            description: description,
+            status: "pending",
+            image: imaget,
+            date: date,
+          },
+        });
+      }
+
       res
         .status(201)
         .json({ message: "Actualite created successfully", actualite });
@@ -67,5 +91,43 @@ class ActualiteController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async ValidateActualite(req: Request, res: Response) {
+    const {
+      idAdministrator,
+      actualiteId,
+    }: {
+      idAdministrator: string;
+      actualiteId: string;
+    } = req.body;
+    try {
+      const actualiteIdInt = parseInt(actualiteId);
+      const administrator = parseInt(idAdministrator);
+
+      const ValidateOnTime =
+        await prisma.validate_Actualite_Administrator.create({
+          data: {
+            AdministratorId: administrator,
+            actualiteId: actualiteIdInt,
+            ValidatedAt: new Date(),
+          },
+        });
+      if (ValidateOnTime) {
+        const validateActualite = await prisma.actualite.update({
+          where: { idActualite: actualiteIdInt },
+          data: { status: "accepted" },
+        });
+        res.status(200).json({
+          message: "Actualite updated successfully",
+          updatedDemandeVisite: validateActualite,
+        });
+      } else {
+        res.status(500).json({ error: "Something wrong " });
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
+
 export default ActualiteController;

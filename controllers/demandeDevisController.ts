@@ -36,8 +36,9 @@ class DemandeDevisController {
 
       const createDemandeDevis = await prisma.demandedevis.create({
         data: {
-          status: "pending", // Set status as needed
           visitor: { connect: { idVisitor: visitorId } },
+          status: "pending", // Set status as needed
+          createdAt: new Date()
         },
       });
 
