@@ -18,6 +18,12 @@
     provider = "mysql"
     url      = env("DATABASE_URL")
   }
+    enum ProfileType {
+    club
+    author
+    alumni
+  }
+
 
   model profile {
     id                    Int                    @id @default(autoincrement())
@@ -31,45 +37,59 @@
     refreshToken  String?
     type                  ProfileType
     author              author? 
-    club                club? 
+    // club                club? 
     // dlab                  dlab?
     // dre                   dre?
-    alumni          alumni?
+    // alumni          alumni?
     // partenaire            partenaire?
     // student               student?
   }
 
 
-  enum ProfileType {
-    club
-    author
-    alumni
+
+  model author {
+      idAuthor        Int      @id @default(autoincrement())
+      idProfile       Int @unique
+      club club?
+      dre DRE?
+      administrator Administrator?
+      responsableEvenenement responsableEvenement?
+    profile                 profile     @relation(fields: [idProfile], references: [id], map: "profile_author_fkey")
+  }
+  model DRE {
+    idDre Int @id 
+    demandeDevis DemandeDevis_DRE[]
+      author  author @relation(fields: [idDre], references: [idAuthor], map:"DRE_author_fkey")
+
+  }
+  model Administrator {
+    idAdministrator Int @id 
+    author  author @relation(fields: [idAdministrator], references: [idAuthor], map:"Administrator_author_fkey")
+
+    actualite Validate_Actualite_Administrator[]
+
+  }
+  model responsableEvenement {
+    idReseponsableEvenement Int @id 
+    author  author @relation(fields: [idReseponsableEvenement], references: [idAuthor], map:"ResponsableEvenement_profile_fkey")
+    evenement  Validate_Evenement_ResponsableEvenement[]
+    evenementClub  Validate_EvenementClub_ResponsableEvenement[]
+
   }
 
   model club { 
     idClub Int @id 
-    profile  profile @relation(fields: [idClub], references: [id], map:"club_profile_fkey")
+    author  author @relation(fields: [idClub], references: [idAuthor], map:"club_profile_fkey")
     // evenement evenement[]
   }
 
-
-  model author {
-    idAuthor Int         @id 
-    actualite               Actualite[]
-    evenements evenement[]
-    profile                 profile     @relation(fields: [idAuthor], references: [id], map: "profile_author_fkey")
-  }
-
-
   model alumni {
     idAlumni        Int              @id
-    evenementalumni evenementalumni[]
+    demandeEvenementAlumni EvenementAlumni[]
+    // evenementAlumni   evenementalumni[]
     alumniJob String 
     alumniQuote String
-    profile         profile          @relation(fields: [idAlumni], references: [id], map: "alumni_profile_fkey")
   }
-
-
 
   // !!!!! ALLL PROFILES TILL NOW 
   model TypeActualite {
@@ -78,57 +98,100 @@
     name            String
   }
 
-  //!!! Actualite 
 
+ 
+  //!!! Actualite 
   model Actualite {
     idActualite                    Int             @id @default(autoincrement())
-    idAuthor                  Int 
+    idAdministrator                  Int 
     titre                 String
     description           String?       
     image                 String?               
     date             DateTime?
-    idType                Int       
-    author author @relation(fields: [idAuthor], references: [idAuthor] , map:"author_actualite_fkey")
+    idType                Int   
+    status            String     
+    Administrator Validate_Actualite_Administrator[]
     typeActualite         TypeActualite   @relation(fields: [idType], references: [idTypeActualite] , map: "typeActualiteActualite")
   }
 
+
+
+  model Validate_Actualite_Administrator{
+    AdministratorId Int 
+    actualiteId Int 
+         ValidatedAt            DateTime @default(now())
+
+    actualite Actualite @relation(fields: [actualiteId], references: [idActualite],map:"validation_actualite")
+    administrator Administrator @relation(fields: [AdministratorId],references: [idAdministrator],map:"validation_parAdministrator")
+      @@id([actualiteId,AdministratorId])
+
+  }
+  model evenementClub {
+    idEvenementClub                   Int                   @id @default(autoincrement())
+    // clubIden              Int?
+    // club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
+    responsableEVenement Validate_EvenementClub_ResponsableEvenement[]
+    titre                 String
+    description           String?       
+    image                 String?  
+    status            String             
+    date             DateTime?
+  }
+
+
+  model Validate_EvenementClub_ResponsableEvenement{
+    responsableEvenementId Int 
+    evenementId Int 
+    ValidatedAt            DateTime @default(now())
+
+    evenementClub evenementClub @relation(fields: [evenementId], references: [idEvenementClub],map:"validation_evenementClub")
+    responsableEvenement responsableEvenement @relation(fields: [responsableEvenementId],references: [idReseponsableEvenement],map:"validationClub_parResponsabl")
+      @@id([evenementId,responsableEvenementId])
+
+  }
 
   //!!! evenement
   model evenement {
     idEvenement                    Int                   @id @default(autoincrement())
     // clubIden              Int?
     // club                  club                  @relation(fields: [clubIden], references: [idClub], map: "Evenement_clubId_fkey")
-    idAuthor Int 
-    author author @relation(fields: [idAuthor], references: [idAuthor], map: "Evenement_author_fkey")
+    responsableEveneemnt Validate_Evenement_ResponsableEvenement[]
     titre                 String
     description           String?       
-    image                 String?               
+    image                 String?  
+    status            String             
     date             DateTime?
   }
+
+  model Validate_Evenement_ResponsableEvenement{
+    responsableEvenementId Int 
+    evenementId Int 
+         ValidatedAt            DateTime @default(now())
+
+    responsableValidation evenement @relation(fields: [evenementId], references: [idEvenement],map:"validation_evenement")
+    responsableEvenement responsableEvenement @relation(fields: [responsableEvenementId],references: [idReseponsableEvenement],map:"validation_parResponsabl")
+      @@id([evenementId,responsableEvenementId])
+
+  }
+
 
   //!!!! EVENEMENT ALUMNI
 
-  model evenementalumni {
-    idEvenementAlumni             Int          @id @default(autoincrement())
-    idAlumni Int 
-    titre                 String
-    description           String?       
-    image                 String?               
-    date             DateTime?
-    alumni   alumni @relation(fields: [idAlumni], references: [idAlumni], map: "evenementAlumni_AlumniId_fkey")
-    visitor        Inscription[]    
-  }
+  // model evenementalumni {
+  //   idEvenementAlumni             Int          @id @default(autoincrement())
+  //   idAlumni Int 
+  //   titre                 String
+  //   description           String?       
+  //   image                 String?               
+  //   date             DateTime?
+  //   alumni   alumni @relation(fields: [idAlumni], references: [idAlumni], map: "evenementAlumni_AlumniId_fkey")
+  //   visitor        Inscription[]    
+  // }
 
   //!! VISITOR 
 
- model Inscription {
-  visitor visitor @relation(fields: [visitorId] , references: [idVisitor])
-  visitorId Int 
-  evenementAlumni evenementalumni @relation(fields: [evenementAlumniId] , references: [idEvenementAlumni])
-  evenementAlumniId Int 
 
-  @@id([visitorId,evenementAlumniId])
- }
+
   model visitor {
     idVisitor                 Int                   @id @default(autoincrement())
     email               String                @unique(map: "Visitor_email_key")
@@ -145,15 +208,52 @@
     ticket              ticket[]
   }
 
+model DemandeDevis_DRE {
+  idDemandeDevis Int
+  idDRE           Int
+  dre             DRE         @relation(fields: [idDRE], references: [idDre], map: "Validation_DRE")
+  demandeDevis   demandedevis @relation(fields: [idDemandeDevis], references: [idDemandeDevis], map: "Validation_DemandeDevis")
+     ValidatedAt            DateTime @default(now())
+
+  @@id([idDemandeDevis, idDRE])
+}
+
 
   model demandedevis {
     idDemandeDevis        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+    idDRE Int 
+    dre DemandeDevis_DRE[]
      createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandeDevis_visitorId_fkey")
 
   }
+ model Inscription {
+  visitor visitor @relation(fields: [visitorId] , references: [idVisitor])
+  visitorId Int 
+  evenementAlumni EvenementAlumni @relation(fields: [evenementAlumniId] , references: [idEvenementAlumni],map:"Inscription_Evenement")
+  evenementAlumniId Int 
+
+  @@id([visitorId,evenementAlumniId])
+ }
+
+  model EvenementAlumni {
+   idEvenementAlumni        Int     @id @default(autoincrement())
+    status    String
+    idAlumni Int
+     titre                 String
+    description           String?       
+    image                 String?               
+    date             DateTime?
+    visitor        Inscription[]  
+    createdAt            DateTime @default(now())
+    alumni   alumni @relation(fields: [idAlumni], references: [idAlumni], map: "DemandeEvenementAlumni_Alumni_fkey")
+  }
+
+
+
+
 
   model demandepartenaire {
     idDemandePartenaire        Int     @id @default(autoincrement())
