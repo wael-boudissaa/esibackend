@@ -9,10 +9,10 @@ class EventController {
       const evenement = await prisma.evenement.findMany();
       res.json(evenement);
     } catch (error) {
-      console.error("Error retrieving actualites:", error);
+      console.error("Error retrieving events:", error);
       res
         .status(500)
-        .json({ error: "An error occurred while retrieving actualites." });
+        .json({ error: "An error occurred while retrieving events." });
     }
   }
 
@@ -48,6 +48,7 @@ class EventController {
       idAuthor: string;
       image: string;
     } = req.body;
+
   
     const parsedAuthorId = parseInt(idAuthor);
   
