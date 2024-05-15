@@ -73,7 +73,8 @@
   model Administrator {
     idAdministrator Int @id 
     author  author @relation(fields: [idAdministrator], references: [idAuthor], map:"Administrator_author_fkey")
-
+    demandeVisite demandeVisite_Administrator[]
+    visite visite []
     actualite Validate_Actualite_Administrator[]
 
   }
@@ -284,11 +285,23 @@ model DemandePartenaire_DRE {
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandePartenaire_visitorId_fkey")
 
   }
+  model demandeVisite_Administrator { 
+    idDemandeVisite Int 
+    idAdministrator Int 
+    administrator Administrator @relation(fields: [idAdministrator],references: [idAdministrator],map : "demandeVisite_validate")
+    demandeVisite demandevisite @relation(fields: [idDemandeVisite],references: [idDemandeVisite],map : "adminstrator_validate")
+      validateAt DateTime @default(now())
+    @@id([idAdministrator,idDemandeVisite])
+  }
 
   model demandevisite {
     idDemandeVisite        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+    nomOrganisation String 
+    nombreParticipant Int
+    raisonVisite String
+    administator demandeVisite_Administrator[]
      createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "DemandeVisite_visitorId_fkey")
 
@@ -368,6 +381,14 @@ model DemandePartenaire_DRE {
 
   }
 
+model visite  {
+  idVisite Int @id @default(autoincrement())
+  dateVisite DateTime 
+  idAdministrator Int 
+  status String 
+  capacite Int
+  administrator Administrator @relation(fields: [idAdministrator], references: [idAdministrator], map:"VisiteAdministrator")
+}
 
 // generator dbml {
 //   provider = "prisma-dbml-generator"
