@@ -9,6 +9,14 @@ interface DemandeVisitor {
   address: string;
   phone: string;
 }
+export const EmailDemandeDevis = (email: string) => {
+  return `<h2>Merci pour votre demande de devis !</h2>
+${email}
+<p>Nous avons bien reçu votre demande de devis pour une formation à l'École Nationale Supérieure d'Informatique (ESI). Nous sommes ravis de vous accompagner dans votre projet de formation !</p>
+<p>Pour continuer le processus de demande de devis, veuillez répondre à cet e-mail avec toute information supplémentaire dont vous pourriez avoir besoin ou pour confirmer votre intérêt pour nos offres de formation.</p>
+<p>Si vous avez des questions ou avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter à [E-mail du Support].</p>
+<p>Cordialement,<br>[ESI]</p>`;
+};
 class DemandeDevisController {
   async CreateDemandeDevis(req: Request, res: Response) {
     const { email, fullname, address, phone }: DemandeVisitor = req.body;
@@ -82,10 +90,7 @@ class DemandeDevisController {
         });
         const email = updatedDemandeDevis.visitor.email;
         let sendEmail = new emailController(email);
-        await sendEmail.generateMail(
-          process.env.EmailDemandeDevis?.toString() || "",
-          email
-        );
+        await sendEmail.generateMail(EmailDemandeDevis(email), email);
         res.status(200).json({
           message: "Demande devis updated successfully",
           updatedDemandeVisite: updatedDemandeDevis,

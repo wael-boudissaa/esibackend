@@ -8,6 +8,14 @@ interface DemandeVisitor {
   address: string;
   phone: string;
 }
+export const EmailDemandeFormateur = (email: string) => {
+  return `<h2>Merci pour votre intérêt à devenir formateur ! ${email}</h2>
+<p>Nous avons bien reçu votre demande pour devenir formateur à l'École Nationale Supérieure d'Informatique (ESI). Nous sommes heureux de vous accueillir dans notre équipe !</p>
+<p>Pour continuer le processus de recrutement, veuillez répondre à cet e-mail avec toute information supplémentaire dont vous pourriez avoir besoin ou pour confirmer votre intérêt pour notre programme de formation.</p>
+<p>Si vous avez des questions ou avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter à [E-mail du Support].</p>
+<p>Cordialement,<br>[ESI]</p>`;
+};
+
 class DemandeFormateurController {
   async CreateDemandeFormateur(req: Request, res: Response) {
     const { email, fullname, address, phone }: DemandeVisitor = req.body;

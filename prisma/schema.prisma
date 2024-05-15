@@ -66,6 +66,7 @@
   model DRE {
     idDre Int @id 
     demandeDevis DemandeDevis_DRE[]
+    demandePartenaire DemandePartenaire_DRE[]
       author  author @relation(fields: [idDre], references: [idAuthor], map:"DRE_author_fkey")
 
   }
@@ -229,6 +230,15 @@ model DemandeDevis_DRE {
   @@id([idDemandeDevis, idDRE])
 }
 
+model DemandePartenaire_DRE {
+  idDemandePartenaire Int
+  idDRE           Int
+  dre             DRE         @relation(fields: [idDRE], references: [idDre], map: "DemandePartenaire_DRE")
+  demandeDevis   demandepartenaire @relation(fields: [idDemandePartenaire], references: [idDemandePartenaire], map: "Validation_DemandePartenaire")
+     ValidatedAt            DateTime @default(now())
+
+  @@id([idDemandePartenaire, idDRE])
+}
 
   model demandedevis {
     idDemandeDevis        Int     @id @default(autoincrement())
@@ -269,6 +279,7 @@ model DemandeDevis_DRE {
     idDemandePartenaire        Int     @id @default(autoincrement())
     status    String
     idVisitor Int
+    dre DemandePartenaire_DRE[]
      createdAt            DateTime @default(now())
     visitor   visitor @relation(fields: [idVisitor], references: [idVisitor], map: "demandePartenaire_visitorId_fkey")
 
