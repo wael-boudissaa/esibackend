@@ -20,11 +20,10 @@ export const generateRandomPassword = () => {
 
 class emailController {
   private _email: string;
-  private _password: string;
+  // private _password: string;
 
-  constructor(email: string, password: string) {
+  constructor(email: string) {
     this._email = email;
-    this._password = password;
   }
 
   get email(): string {
@@ -35,11 +34,7 @@ class emailController {
     this._email = email;
   }
 
-  get password(): string {
-    return this._password;
-  }
-
-  async generateMail(req: Request, res: Response) {
+  async generateMail(generatedMail: string, email: string) {
     let config = {
       service: "gmail",
       port: 2525,
@@ -52,42 +47,9 @@ class emailController {
 
     let message = {
       from: "esi.dz@esi.dz", // sender address
-      to: req.body.email, // list of receivers
+      to: email, // list of receivers
       subject: "Welcome to ESI Website!", // Subject line
-      html: `<h2>Congratulations on Becoming a Partner!</h2>
- <p>
-          Dear ${req.body.fullname},
-      </p>
-      
-      <p>
-          We are thrilled to inform you that your application to become a partner with our platform has been accepted! Welcome aboard!
-      </p>
-      
-      <p>
-          As a valued partner, you now have access to exclusive features and resources on our platform.
-      </p>
-      
-      <p>
-          Here are your login credentials to authenticate to the platform:
-      </p>
-      
-      <ul>
-          <li><strong>Email:</strong> ${req.body.email}</li>
-          <li><strong>Password:</strong> ${this.password}</li>
-      </ul>
-      
-      <p>
-          Please use the provided credentials to log in to our platform and explore the available features. We look forward to collaborating with you!
-      </p>
-      
-      <p>
-          If you have any questions or need assistance, feel free to contact our support team at [Support Email].
-      </p>
-      
-      <p>
-          Best regards,<br>
-          [Your Organization Name]
-      </p>`, // html body
+      html: `${generatedMail}`, // html body
       // attachments: [
       //   // use URL as an attachment
       //   {
@@ -99,16 +61,8 @@ class emailController {
     };
     try {
       let info = await transporter.sendMail(message);
-      res.status(200).send({
-        msg: "Email sent",
-        info: info.messageId,
-        preview: nodemailer.getTestMessageUrl(info),
-      });
     } catch (error) {
       console.error("Error sending email:", error);
-      res
-        .status(500)
-        .send({ error: "An error occurred while sending the email." });
     }
   }
 }

@@ -108,7 +108,7 @@ class partenaireController {
   //     await sendEmail.generateMail(req, res);
   //   } catch (err) {
   //     console.error("Error updating demande partenaire:", err);
-  //   }
+  //   
   // }
 }
 export default partenaireController;

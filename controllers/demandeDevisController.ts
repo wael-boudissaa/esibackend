@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import emailController from "./emailController";
 const prisma = new PrismaClient();
 
 interface DemandeVisitor {
@@ -38,7 +39,7 @@ class DemandeDevisController {
         data: {
           visitor: { connect: { idVisitor: visitorId } },
           status: "pending", // Set status as needed
-          createdAt: new Date()
+          createdAt: new Date(),
         },
       });
 
@@ -53,21 +54,45 @@ class DemandeDevisController {
   }
 
   async PatchDemandeDevis(req: Request, res: Response) {
-    const { demandeVisiteId } = req.body;
-    try {
-      const updatedDemandeDevis = await prisma.demandedevis.update({
-        where: {
-          idDemandeDevis: parseInt(demandeVisiteId),
-        },
-        data: {
-          status: "accepted",
-        },
-      });
+    const { demandeDevisId, dreId } = req.body;
 
-      res.status(200).json({
-        message: "Demande devis updated successfully",
-        updatedDemandeVisite: updatedDemandeDevis,
+    try {
+      const traceValidation = await prisma.demandeDevis_DRE.create({
+        data: {
+          idDemandeDevis: demandeDevisId,
+          idDRE: dreId,
+          ValidatedAt: new Date(),
+        },
       });
+      if (traceValidation) {
+        const updatedDemandeDevis = await prisma.demandedevis.update({
+          where: {
+            idDemandeDevis: parseInt(demandeDevisId),
+          },
+          data: {
+            status: "accepted",
+          },
+          include: {
+            visitor: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        });
+        const email = updatedDemandeDevis.visitor.email;
+        let sendEmail = new emailController(email);
+        await sendEmail.generateMail(
+          process.env.EmailDemandeDevis?.toString() || "",
+          email
+        );
+        res.status(200).json({
+          message: "Demande devis updated successfully",
+          updatedDemandeVisite: updatedDemandeDevis,
+        });
+      } else {
+        res.status(400).json({ error: "Something Wrong" });
+      }
     } catch (err) {
       console.error("Error updating demande devis:", err);
       res.status(500).json({ error: "Internal server error" });
