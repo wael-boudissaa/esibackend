@@ -6,11 +6,13 @@ const prisma = new PrismaClient();
 class EventController {
   async getAllEvents(req: Request, res: Response) {
     try {
-      const events = await prisma.evenement.findMany();
-      res.json(events);
+      const evenement = await prisma.evenement.findMany();
+      res.json(evenement);
     } catch (error) {
-      console.error("Error retrieving events:", error);
-      res.status(500).json({ error: "An error occurred while retrieving events." });
+      console.error("Error retrieving actualites:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving actualites." });
     }
   }
 
@@ -32,34 +34,56 @@ class EventController {
     }
   }
   
-//   async createEvent(req: Request, res: Response) {
-//     const { clubId, responsableValidationId, titre, description, image, dateDebut, dateFin } = req.body;
-//     try {
-//         const newEvent = await prisma.evenement.create({
-//             data: {
-//                 club: {
-//                     connect: {
-//                         clubId: clubId
-//                     }
-//                 },
-//                 responsablevalidation: {
-//                     connect: {
-//                         responsableValidationId: responsableValidationId
-//                     }
-//                 },
-//                 titre: titre,
-//                 description: description,
-//                 image: image,
-//                 dateDebut: new Date(dateDebut),
-//                 dateFin: new Date(dateFin)
-//             }
-//         });
-//         res.json(newEvent);
-//     } catch (error) {
-//         console.error('Error creating event:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// }
+  async createEvent(req: Request, res: Response) {
+    const {
+      titre,
+      description,
+      date,
+      idAuthor,
+      image,
+    }: {
+      titre: string;
+      description: string;
+      date: string;
+      idAuthor: string;
+      image: string;
+    } = req.body;
+  
+    const parsedAuthorId = parseInt(idAuthor);
+  
+    try {
+      const author = await prisma.author.findUnique({
+        where: { idAuthor: parsedAuthorId },
+        include: { profile: true },
+      });
+  
+      if (!author) {
+        return res.status(404).json({ error: "Author not found." });
+      }
+  
+      let status = "pending";
+      if (author.profile.type === "responsableEveneemnt") {
+        status = "accepted";
+      }
+  
+      const event = await prisma.evenement.create({
+        data: {
+          author: { connect: { idAuthor: parsedAuthorId } },
+          titre: titre,
+          description: description,
+          status: status,
+          date: date,
+          image: image,
+        },
+      });
+  
+      res.status(201).json({ message: "Event created successfully", event });
+    } catch (err) {
+      console.error("Error creating event:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
 
   async validateEvent(req: Request, res: Response) {
     const { eventId, idAuthor } = req.body;
