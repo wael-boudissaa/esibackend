@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -41,23 +41,27 @@ const prisma = new PrismaClient();
 //         res.status(500).json({ error: 'Internal Server Error' });
 //     }
 // };
-
-export const getClubById = async (req: Request, res: Response) => {
+export class clubController {
+  async getClubById(req: Request, res: Response) {
     const { id } = req.params;
     try {
-        const club = await prisma.club.findUnique({
-            where: { idClub: parseInt(id) }
-        });
-        if (!club) {
-            res.status(404).json({ error: 'Club not found' });
-        } else {
-            res.status(200).json(club);
-        }
+      const club = await prisma.club.findUnique({
+        where: { idClub: parseInt(id) },
+      });
+      if (!club) {
+        res.status(404).json({ error: "Club not found" });
+      } else {
+        res.status(200).json(club);
+      }
     } catch (error) {
-        console.error('Error getting club by ID:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error("Error getting club by ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-};
+  }
+//   async createDemandeEvenementClub (req:Request, res:Response){
+//     const {email,phone,fullname,raison_}
+//   }
+}
 
 // export const updateClub = async (req: Request, res: Response) => {
 //     const { id } = req.params;

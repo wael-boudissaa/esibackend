@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+
 // export const createUser = async (
 //   email: string,
 //   password: string,
@@ -49,7 +50,6 @@ const prisma = new PrismaClient();
 // };
 
 class partenaireController {
-  
   async postDemandePartenaire(req: Request, res: Response) {
     try {
       const { email, fullname, phone, address } = req.body;
@@ -108,7 +108,22 @@ class partenaireController {
   //     await sendEmail.generateMail(req, res);
   //   } catch (err) {
   //     console.error("Error updating demande partenaire:", err);
-  //   
+  //
   // }
+ 
+
+  async getDemandeDevis(req: Request, res: Response) {
+    try {
+      const getDemandeDEvis = await prisma.demandedevis.findMany({});
+
+      res.status(200).json({
+        message: "Demande devis updated successfully",
+        DemandePartenaire: getDemandeDEvis,
+      });
+    } catch (err) {
+      console.error("Error updating demande devis:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 export default partenaireController;
