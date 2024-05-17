@@ -2,12 +2,12 @@
   "name": "backendesi",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx prisma generate &&  npx tsc",
-    "start": "node ./index.js",
-    "dev": "npx prisma generate && nodemon ./index.ts"
+    "build": "npx prisma generate && npx tsc",
+    "start": "node ./index.ts",
+    "dev": "npx prisma generate && nodemon --exec ts-node ./index.ts"
   },
   "keywords": [],
   "author": "",

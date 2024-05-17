@@ -27,36 +27,36 @@ class EvenementAlumniController {
     }
   }
   async createEvent(req: Request, res: Response) {
-    const {
-      titre,
-      description,
-      image,
-      date,
-      alumniId,
-    }: {
-      titre: string;
-      description: string;
-      image: string;
-      date: Date;
-      alumniId: number;
-    } = req.body;
-    try {
-      const event = await prisma.evenementalumni.create({
-        data: {
-          idAlumni: alumniId,
-          titre: titre,
-          description: description,
-          image: image,
-          date: date,
-        },
-      });
-      res
-        .status(201)
-        .json({ message: "Event Alumni created successfully", event });
-    } catch (err) {
-      console.error("Error creating event:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
+    // const {
+    //   titre,
+    //   description,
+    //   image,
+    //   date,
+    //   alumniId,
+    // }: {
+    //   titre: string;
+    //   description: string;
+    //   image: string;
+    //   date: Date;
+    //   alumniId: number;
+    // } = req.body;
+    // try {
+    //   const event = await prisma.evenementAlumni.create({
+    //     data: {
+    //       idAlumni: alumniId,
+    //       titre: titre,
+    //       description: description,
+    //       image: image,
+    //       date: date,
+    //     },
+    //   });
+    //   res
+    //     .status(201)
+    //     .json({ message: "Event Alumni created successfully", event });
+    // } catch (err) {
+    //   console.error("Error creating event:", err);
+    //   res.status(500).json({ error: "Internal server error" });
+    // }
   }
 }
 export default EvenementAlumniController;
