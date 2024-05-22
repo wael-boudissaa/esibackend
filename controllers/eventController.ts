@@ -63,7 +63,7 @@ class EventController {
       }
   
       let status = "pending";
-      if (author.profile.type === "responsableEveneemnt") {
+      if (author.profile.type === "responsableEvenement") {
         status = "accepted";
       }
   

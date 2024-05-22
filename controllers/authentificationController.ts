@@ -45,7 +45,7 @@ interface RequestBodyCreateUser {
 }
 enum ProfileType {
   club = "club",
-  responsableEveneemnt = "responsableEveneemnt",
+  responsableEvenement = "responsableEvenement",
   administrator = "administrator",
   dre = "dre",
 }
@@ -132,7 +132,6 @@ export class authentificationController {
 
     try {
       const imaget = (req as MulterRequest).file.path;
-
       if (!email) {
         throw new Error("Please enter an email address");
       }
@@ -166,6 +165,53 @@ export class authentificationController {
           last_login: last_login,
         },
       });
+      const newAuthor = await prisma.author.create({
+        data: {
+          idProfile: newUser.id,
+        },
+      });
+
+      // Based on the profile type, create and link the appropriate record
+      switch (type) {
+        case "club":
+          await prisma.club.create({
+            data: {
+              author: {
+                connect: { idAuthor: newAuthor.idAuthor },
+              },
+            },
+          });
+          break;
+        case "responsableEvenement":
+          await prisma.responsableEvenement.create({
+            data: {
+              author: {
+                connect: { idAuthor: newAuthor.idAuthor },
+              },
+            },
+          });
+          break;
+        case "administrator":
+          await prisma.administrator.create({
+            data: {
+              author: {
+                connect: { idAuthor: newAuthor.idAuthor },
+              },
+            },
+          });
+          break;
+        case "dre":
+          await prisma.dRE.create({
+            data: {
+              author: {
+                connect: { idAuthor: newAuthor.idAuthor },
+              },
+            },
+          });
+          break;
+        default:
+          throw new Error("Invalid profile type");
+      }
 
       resp
         .status(200)

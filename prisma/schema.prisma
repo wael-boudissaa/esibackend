@@ -9,6 +9,38 @@
 //     relationMode = "prisma"
 
 // }
+model page { 
+  idPage Int @id @default(autoincrement())
+  nomPage String
+  hersection heroSection[]
+  section section[]
+
+}
+model heroSection { 
+  idHeroSection Int @id @default(autoincrement())
+  idpage Int
+  titre String 
+  description String
+  page page @relation(fields: [idpage], references: [idPage],map:"herSection_page")
+  image String
+}
+
+model gallerie {
+  idGallerie Int @id @default(autoincrement())
+  link String?
+}
+
+model section { 
+  idSection Int @id @default(autoincrement())
+  titreSection String
+  typeSection String
+  description String
+  link String 
+  image String
+  idPage Int
+  page page @relation(fields: [idPage], references: [idPage],map:"Section_page")
+
+}
 
   generator client {
     provider = "prisma-client-js"
@@ -20,7 +52,7 @@
   }
     enum ProfileType {
     club
-    responsableEveneemnt
+    responsableEvenement
     administrator
     dre
 
@@ -161,6 +193,7 @@
   //     @@id([evenementId,responsableEvenementId])
 
   // }
+
 
   //!!! evenement
   model evenement {
