@@ -57,9 +57,7 @@ model section {
     dre
 
   }
-    generator dbml {
-  provider = "prisma-dbml-generator"
-}
+z
 
 
   model profile {
