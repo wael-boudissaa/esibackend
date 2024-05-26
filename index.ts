@@ -1,4 +1,4 @@
-import  { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import emailRoute from "./routes/emailRoute";
 import events from "./routes/eventRoute";
@@ -22,15 +22,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use((req:Request, res:Response, next:NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
-    methods: "GET,POST,PATCH",
+    origin: "https://esi-steel.vercel.app",
+    methods: "GET,POST,PATCH,PUT",
     credentials: true,
   })
 );
