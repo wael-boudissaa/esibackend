@@ -62,7 +62,6 @@ class EventController {
     } = req.body;
 
     const imaget = (req as MulterRequest).file.path;
-
     const parsedAuthorId = parseInt(idAuthor);
 
     try {
@@ -76,7 +75,10 @@ class EventController {
       }
 
       let status = "pending";
-      if (author.profile.type === ProfileType.responsableEvenement) {
+      if (
+        (author.profile.type as ProfileType) ===
+        ProfileType.responsableEvenement
+      ) {
         status = "accepted";
       }
 
