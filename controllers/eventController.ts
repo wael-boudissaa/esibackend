@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ProfileType } from "@prisma/client"; // Import ProfileType from Prisma
 
 const prisma = new PrismaClient();
 const multer = require("multer");
@@ -7,12 +7,7 @@ const multer = require("multer");
 export interface MulterRequest extends Request {
   file: any;
 }
-enum ProfileType {
-  club = "club",
-  responsableEvenement = "responsableEvenement",
-  administrator = "administrator",
-  dre = "dre",
-}
+
 class EventController {
   async getAllEvents(req: Request, res: Response) {
     try {
@@ -75,10 +70,7 @@ class EventController {
       }
 
       let status = "pending";
-      if (
-        (author.profile.type as ProfileType) ===
-        ProfileType.responsableEvenement
-      ) {
+      if (author.profile.type === ProfileType.responsableEvenement) {
         status = "accepted";
       }
 
