@@ -7,7 +7,12 @@ const multer = require("multer");
 export interface MulterRequest extends Request {
   file: any;
 }
-
+enum ProfileType {
+  club = "club",
+  responsableEvenement = "responsableEvenement",
+  administrator = "administrator",
+  dre = "dre",
+}
 class EventController {
   async getAllEvents(req: Request, res: Response) {
     try {
@@ -71,7 +76,7 @@ class EventController {
       }
 
       let status = "pending";
-      if (author.profile.type === "responsableEvenement") {
+      if (author.profile.type === ProfileType.responsableEvenement) {
         status = "accepted";
       }
 
