@@ -52,7 +52,7 @@ model section {
   }
     enum ProfileType {
     club
-    responsableEvenement
+    responsableEvenement  
     administrator
     dre
 

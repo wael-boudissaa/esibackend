@@ -12,6 +12,7 @@ interface DemandeVisitor {
   nom_organisation: string;
   nombre_participant: number;
 }
+
 export const EmailDemandeVisite = (email: string) => {
   return `<h2>Merci pour votre demande de visite !</h2>
   ${email}

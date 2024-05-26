@@ -35,10 +35,12 @@ class EventController {
       res.json(event);
     } catch (error) {
       console.error("Error retrieving event:", error);
-      res.status(500).json({ error: "An error occurred while retrieving event." });
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving event." });
     }
   }
-  
+
   async createEvent(req: Request, res: Response) {
     const {
       titre,
@@ -57,22 +59,22 @@ class EventController {
     const imaget = (req as MulterRequest).file.path;
 
     const parsedAuthorId = parseInt(idAuthor);
-  
+
     try {
       const author = await prisma.author.findUnique({
         where: { idAuthor: parsedAuthorId },
         include: { profile: true },
       });
-  
+
       if (!author) {
         return res.status(404).json({ error: "Author not found." });
       }
-  
+
       let status = "pending";
       if (author.profile.type === "responsableEvenement") {
         status = "accepted";
       }
-  
+
       const event = await prisma.evenement.create({
         data: {
           author: { connect: { idAuthor: parsedAuthorId } },
@@ -83,14 +85,13 @@ class EventController {
           image: imaget,
         },
       });
-  
+
       res.status(201).json({ message: "Event created successfully", event });
     } catch (err) {
       console.error("Error creating event:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }
-
 
   async validateEvent(req: Request, res: Response) {
     const {
