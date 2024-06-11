@@ -7,6 +7,6 @@ const auth = new authentificationController();
 route.post("/login", auth.login);
 route.post("/create", upload.single("image"), auth.createUser);
 route.get("/getusers", auth.getUsers);
-route.post("/updateusers", auth.updateTokens);
+route.post("/update", auth.updateTokens);
 
 export default route;

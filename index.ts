@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import emailRoute from "./routes/emailRoute";
 import events from "./routes/eventRoute";
-import clubs from "./routes/clubRoute";
+import clubs from "./routes/sectionRoute";
 
 import actualite from "./routes/actualiteRouter";
 import demande from "./routes/demandeRouter";
@@ -29,7 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(
   cors({
-    origin: "https://esi-steel.vercel.app",
+    origin: "http://localhost:3000",
     methods: "GET,POST,PATCH,PUT",
     credentials: true,
   })

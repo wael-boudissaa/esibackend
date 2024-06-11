@@ -40,7 +40,28 @@ class EventController {
         .json({ error: "An error occurred while retrieving event." });
     }
   }
-
+  async getEvenetByIdType(req: Request, res: Response) {
+    const { idType } = req.body;
+    try {
+      const event = await prisma.typeEvenement.findUnique({
+        where: {
+          idTypeEvenement: parseInt(idType),
+        },
+        include:{
+          evenement:true
+        }
+      });
+      if (!event) {
+        return res.status(404).json({ error: "Event not found." });
+      }
+      res.json(event.evenement);
+    } catch (error) {
+      console.error("Error retrieving event:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving event." });
+    }
+  }
   async createEvent(req: Request, res: Response) {
     const {
       titre,
@@ -48,12 +69,14 @@ class EventController {
       date,
       idAuthor,
       image,
+      idType
     }: {
       titre: string;
       description: string;
       date: string;
       idAuthor: string;
       image: string;
+      idType: string
     } = req.body;
 
     const imaget = (req as MulterRequest).file.path;
@@ -82,12 +105,37 @@ class EventController {
           status: status,
           date: date,
           image: imaget,
+          typeEvenement:{connect: {idTypeEvenement: parseInt(idType)}}
         },
       });
 
       res.status(201).json({ message: "Event created successfully", event });
     } catch (err) {
       console.error("Error creating event:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  async searchEventsByName(req: Request, res: Response) {
+    const { name } = req.body;
+
+    if (!name || typeof name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing 'name' parameter." });
+    }
+
+    try {
+      const events = await prisma.evenement.findMany({
+        where: {
+          titre: {
+            startsWith: name.toString(),
+          },
+        },
+      });
+
+      res.status(200).json({ events });
+    } catch (err) {
+      console.error("Error searching for events:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }
@@ -129,20 +177,22 @@ class EventController {
     }
   }
 
-  // async deleteEvent(req: Request, res: Response) {
-  //   const { id } = req.params;
-  //   try {
-  //     await prisma.evenement.delete({
-  //       where: {
-  //         idEvenement: parseInt(id),
-  //       },
-  //     });
-  //     res.sendStatus(204);
-  //   } catch (error) {
-  //     console.error("Error deleting event:", error);
-  //     res.status(500).json({ error: "An error occurred while deleting event." });
-  //   }
-  // }
+  async deleteEvent(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const deleted = await prisma.evenement.delete({
+        where: {
+          idEvenement: parseInt(id),
+        },
+      });
+      res.status(200).json({ message: "Event Deleted" });
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while deleting event." });
+    }
+  }
 }
 
 export default EventController;

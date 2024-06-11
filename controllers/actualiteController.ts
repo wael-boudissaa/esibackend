@@ -27,6 +27,25 @@ class ActualiteController {
         .json({ error: "An error occurred while retrieving actualites." });
     }
   }
+  async getActualiteById(req: Request, res: Response) {
+    const { idActualite } = req.params;
+    try {
+      const actualite = await prisma.actualite.findUnique({
+        where: {
+          idActualite: parseInt(idActualite),
+        },
+      });
+      if (!actualite) {
+        return res.status(404).json({ error: "Actualite not found." });
+      }
+      res.json(actualite);
+    } catch (error) {
+      console.error("Error retrieving actualite:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving actualite." });
+    }
+  }
   //!!! ACTUALITE CREATE
   async createActuailte(req: Request, res: Response) {
     const {
@@ -126,6 +145,23 @@ class ActualiteController {
       }
     } catch (err) {
       res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  async DeleteActualite(req: Request, res: Response) {
+    const { idActualite } = req.body;
+    try {
+      const deleted = await prisma.actualite.delete({
+        where: {
+          idActualite: parseInt(idActualite),
+        },
+      });
+
+      res.status(200).json({ message: "Actualite Deleted" });
+    } catch (error) {
+      console.error("Error deleting actualite:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while deleting actualite." });
     }
   }
 }

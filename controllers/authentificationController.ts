@@ -12,12 +12,13 @@ const prisma = new PrismaClient();
 const jwtSecret: string =
   (process.env.JWT_SECRET as string) || "1VSDQ44BR6ER6486T1E61QNT6NT46N84Q";
 
-const jwtOptionsAcces: jwt.SignOptions = {
+const jwtOptionsAccess: jwt.SignOptions = {
   expiresIn: "1h",
 };
 const jwtOptionsRefresh: jwt.SignOptions = {
   expiresIn: "10h",
 };
+
 // const createAccesToken = (id: string, type: string) => {
 //   return jwt.sign({ id: id, type: type }, "accesbaba", { expiresIn: "15min" });
 // };
@@ -55,66 +56,120 @@ const ROUND: number = process.env.KEY_ROUND
   : 10;
 
 export class authentificationController {
-  async login(req: Request, resp: Response) {
-    const { email, password }: RequestBody = req.body;
+  // async login(req: Request, resp: Response) {
+  //   const { email, password }: RequestBody = req.body;
+
+  //   if (!email) {
+  //     resp.status(400).send({ message: "Please enter an email address" });
+  //     console.log("email is required");
+  //   }
+
+  //   if (!password) {
+  //     resp.status(400).send({ message: "Please enter a password" });
+  //     console.log("password is required");
+  //   }
+
+  //   try {
+  //     const user = await prisma.profile.findUnique({ where: { email: email } });
+
+  //     if (!user) {
+  //       return resp.status(401).send({ message: "User not found" });
+  //     }
+  //     //!!! Verifier si l'email existe
+  //     const hashPassword1 = await bcrypt.hash(password, ROUND);
+
+  //     const hashPassword = await bcrypt.compare(password, user.password);
+  //     // !!!! Verifier si mot passe juste
+
+  //     if (hashPassword) {
+  //       const Refreshtoken = jwt.sign(
+  //         { email: email },
+  //         jwtSecret,
+  //         jwtOptionsRefresh
+  //       );
+  //       const AcessToken = jwt.sign(
+  //         { email: email },
+  //         jwtSecret,
+  //         jwtOptionsAcces
+  //       );
+
+  //       const updateUser = await prisma.profile.update({
+  //         where: { email: email }, // Specify the condition to find the user
+  //         data: {
+  //           refreshToken: Refreshtoken,
+  //           last_login: new Date(), // Use new Date() to get the current date and time
+  //         },
+  //       });
+
+  //       //!! Generate A new token and Sign in with update the user information ((date derniere inscription ))
+  //       // console.log(updateUser);
+  //       resp.cookie("token", AcessToken, { httpOnly: true, secure: true });
+  //       resp.status(200).send({ message: "Login successful", AcessToken });
+  //     } else {
+  //       resp
+  //         .status(200)
+  //         .send({ message: "password does not match", hashPassword });
+  //     }
+
+  //     //!! Verifier password
+  //     // ??? Update refresh token on the database and create new acces token
+  //   } catch (error) {
+  //     console.error("Error occurred during login:", error);
+  //     return resp.status(500).send({ message: "Internal server error" });
+  //   }
+  // }
+  async login(req: Request, res: Response) {
+    const { email, password }: { email: string; password: string } = req.body;
 
     if (!email) {
-      resp.status(400).send({ message: "Please enter an email address" });
       console.log("email is required");
+      return res.status(400).send({ message: "Please enter an email address" });
     }
 
     if (!password) {
-      resp.status(400).send({ message: "Please enter a password" });
       console.log("password is required");
+      return res.status(400).send({ message: "Please enter a password" });
     }
 
     try {
       const user = await prisma.profile.findUnique({ where: { email: email } });
 
       if (!user) {
-        return resp.status(401).send({ message: "User not found" });
+        return res.status(401).send({ message: "User not found" });
       }
-      //!!! Verifier si l'email existe
-      const hashPassword1 = await bcrypt.hash(password, ROUND);
 
       const hashPassword = await bcrypt.compare(password, user.password);
-      // !!!! Verifier si mot passe juste
 
-      if (hashPassword) {
-        const Refreshtoken = jwt.sign(
-          { email: email },
-          jwtSecret,
-          jwtOptionsRefresh
-        );
-        const AcessToken = jwt.sign(
-          { email: email },
-          jwtSecret,
-          jwtOptionsAcces
-        );
-
-        const updateUser = await prisma.profile.update({
-          where: { email: email }, // Specify the condition to find the user
-          data: {
-            refreshToken: Refreshtoken,
-            last_login: new Date(), // Use new Date() to get the current date and time
-          },
-        });
-
-        //!! Generate A new token and Sign in with update the user information ((date derniere inscription ))
-        // console.log(updateUser);
-        resp.cookie("token", AcessToken, { httpOnly: true, secure: true });
-        resp.status(200).send({ message: "Login successful", AcessToken });
-      } else {
-        resp
-          .status(200)
-          .send({ message: "password does not match", hashPassword });
+      if (!hashPassword) {
+        return res.status(401).send({ message: "Password does not match" });
       }
 
-      //!! Verifier password
-      // ??? Update refresh token on the database and create new acces token
+      const refreshToken = jwt.sign(
+        { email: email, type: user.type },
+        jwtSecret,
+        jwtOptionsRefresh
+      );
+      const accessToken = jwt.sign(
+        { email: email, type: user.type },
+        jwtSecret,
+        jwtOptionsAccess
+      );
+
+      await prisma.profile.update({
+        where: { email: email },
+        data: {
+          refreshToken: refreshToken,
+          last_login: new Date(),
+        },
+      });
+
+      res.cookie("token", accessToken, { httpOnly: true, secure: true });
+      return res
+        .status(200)
+        .send({ message: "Login successful", accessToken, user: user });
     } catch (error) {
       console.error("Error occurred during login:", error);
-      return resp.status(500).send({ message: "Internal server error" });
+      return res.status(500).send({ message: "Internal server error" });
     }
   }
 
@@ -277,7 +332,7 @@ export class authentificationController {
         const newAccessToken = jwt.sign(
           { email: email },
           jwtSecret,
-          jwtOptionsAcces
+          jwtOptionsAccess
         );
 
         // Send the new access token in the response

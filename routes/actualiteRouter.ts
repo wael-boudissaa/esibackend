@@ -3,12 +3,13 @@ import ActualiteController from "../controllers/actualiteController";
 import upload from "../middleware/uploadingImages";
 // import uploadMiddleware from "../middleware/uploadingImages";
 
-const event = new ActualiteController();
+const actualite = new ActualiteController();
 const router = express.Router();
 
-router.get("/all", event.getAllActualite);
-
-router.post("/create", upload.single("image"), event.createActuailte);
-router.put("/update", upload.single("image"), event.ValidateActualite);
+router.get("/all", actualite.getAllActualite);
+router.get("/:idActualite", actualite.getActualiteById);
+router.delete("/delete", actualite.DeleteActualite);
+router.post("/create", upload.single("image"), actualite.createActuailte);
+router.put("/update", upload.single("image"), actualite.ValidateActualite);
 
 export default router;

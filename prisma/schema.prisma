@@ -194,11 +194,18 @@ model section {
 
 
   //!!! evenement
+    model TypeEvenement {
+    idTypeEvenement Int         @id @default(autoincrement())
+    evenement      evenement[] // Use plural form for relation field name
+    name            String
+  }
+
   model evenement {
     idEvenement                    Int                   @id @default(autoincrement())
     idAuthor Int
-    author author @relation(fields: [idAuthor], references: [idAuthor], map:"CREATE_Author_Evenement")    
-
+    author author @relation(fields: [idAuthor], references: [idAuthor], map:"CREATE_Author_Evenement")   
+    idType Int 
+    typeEvenement         TypeEvenement   @relation(fields: [idType], references: [idTypeEvenement] , map: "typeEvenementEvenement")
     responsableEveneemnt Validate_Evenement_ResponsableEvenement[]
     titre                 String
     description           String?       

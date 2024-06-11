@@ -1,5 +1,5 @@
 import express from 'express';
-import * as clubController from '../controllers/clubController';
+import * as clubController from '../controllers/sectionController';
 import EventController from '../controllers/eventController';
 
 const router = express.Router();

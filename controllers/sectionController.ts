@@ -41,26 +41,30 @@ const prisma = new PrismaClient();
 //         res.status(500).json({ error: 'Internal Server Error' });
 //     }
 // };
-export class clubController {
-  async getClubById(req: Request, res: Response) {
-    const { id } = req.params;
+export class sectionContoller {
+  async getSectionPage(req: Request, res: Response) {
+    const { idPage } = req.body;
     try {
-      const club = await prisma.club.findUnique({
-        where: { idClub: parseInt(id) },
+      const sections = await prisma.page.findUnique({
+        include: {
+          section: true,
+        },
+        where: { idPage: parseInt(idPage) },
       });
-      if (!club) {
-        res.status(404).json({ error: "Club not found" });
+      if (!sections) {
+        res.status(404).json({ error: "page not found" });
       } else {
-        res.status(200).json(club);
+        res.status(200).json(sections);
       }
     } catch (error) {
-      console.error("Error getting club by ID:", error);
+      console.error("Error getting page by ID:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
-//   async createDemandeEvenementClub (req:Request, res:Response){
-//     const {email,phone,fullname,raison_}
-//   }
+
+  //   async createDemandeEvenementClub (req:Request, res:Response){
+  //     const {email,phone,fullname,raison_}
+  //   }
 }
 
 // export const updateClub = async (req: Request, res: Response) => {
