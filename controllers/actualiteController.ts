@@ -34,6 +34,9 @@ class ActualiteController {
         where: {
           idActualite: parseInt(idActualite),
         },
+        include: {
+          typeActualite: true,
+        },
       });
       if (!actualite) {
         return res.status(404).json({ error: "Actualite not found." });

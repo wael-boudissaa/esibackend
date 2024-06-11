@@ -11,7 +11,11 @@ export interface MulterRequest extends Request {
 class EventController {
   async getAllEvents(req: Request, res: Response) {
     try {
-      const evenement = await prisma.evenement.findMany();
+      const evenement = await prisma.evenement.findMany({
+        include: {
+          typeEvenement: true,
+        },
+      });
       res.json(evenement);
     } catch (error) {
       console.error("Error retrieving events:", error);
@@ -27,6 +31,9 @@ class EventController {
       const event = await prisma.evenement.findUnique({
         where: {
           idEvenement: parseInt(id),
+        },
+        include: {
+          typeEvenement: true,
         },
       });
       if (!event) {
@@ -47,9 +54,9 @@ class EventController {
         where: {
           idTypeEvenement: parseInt(idType),
         },
-        include:{
-          evenement:true
-        }
+        include: {
+          evenement: true,
+        },
       });
       if (!event) {
         return res.status(404).json({ error: "Event not found." });
@@ -69,14 +76,14 @@ class EventController {
       date,
       idAuthor,
       image,
-      idType
+      idType,
     }: {
       titre: string;
       description: string;
       date: string;
       idAuthor: string;
       image: string;
-      idType: string
+      idType: string;
     } = req.body;
 
     const imaget = (req as MulterRequest).file.path;
@@ -105,7 +112,7 @@ class EventController {
           status: status,
           date: date,
           image: imaget,
-          typeEvenement:{connect: {idTypeEvenement: parseInt(idType)}}
+          typeEvenement: { connect: { idTypeEvenement: parseInt(idType) } },
         },
       });
 
