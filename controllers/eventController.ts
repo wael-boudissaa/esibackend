@@ -25,17 +25,17 @@ class EventController {
     }
   }
 
-    async getAlllTypes (req:Request,res:Response){
-      try {
-        const typeEvents = await prisma.typeEvenement.findMany();
-        res.json(typeEvents);
-      } catch (error) {
-        console.error("Error retrieving types:", error);
-        res
-          .status(500)
-          .json({ error: "An error occurred while retrieving types." });
-      }
+  async getAlllTypes(req: Request, res: Response) {
+    try {
+      const typeEvents = await prisma.typeEvenement.findMany();
+      res.json(typeEvents);
+    } catch (error) {
+      console.error("Error retrieving types:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving types." });
     }
+  }
   async getEventById(req: Request, res: Response) {
     const { id } = req.params;
     try {
@@ -58,11 +58,33 @@ class EventController {
         .json({ error: "An error occurred while retrieving event." });
     }
   }
+  async getEvenetByUser(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const event = await prisma.evenement.findMany({
+        where: {
+          idAuthor: parseInt(id),
+        },
+        include: {
+          typeEvenement: true,
+        },
+      });
+      if (!event) {
+        return res.status(404).json({ error: "Event not found." });
+      }
+      res.json(event);
+    } catch (error) {
+      console.error("Error retrieving event:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving event." });
+    }
+  }
   async getEvenetByIdType(req: Request, res: Response) {
     const { idType } = req.body;
     try {
       const event = await prisma.typeEvenement.findUnique({
-        where: {  
+        where: {
           idTypeEvenement: parseInt(idType),
         },
         include: {

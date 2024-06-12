@@ -286,7 +286,7 @@ export class authentificationController {
 
       resp
         .status(200)
-        .send({ message: `The ${newUser.email} is connected successfully` });
+        .send({ message: `The ${newUser.email} is connected suc cessfully` });
       console.log("User saved");
     } catch (error) {
       resp.status(400).send({ message: error });
