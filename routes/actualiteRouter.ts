@@ -10,6 +10,8 @@ router.get("/all", actualite.getAllActualite);
 router.get("/:idActualite", actualite.getActualiteById);
 router.delete("/delete", actualite.DeleteActualite);
 router.post("/create", upload.single("image"), actualite.createActuailte);
+router.post("/t/types", upload.single("image"), actualite.getAllActualite);
+
 router.put("/update", upload.single("image"), actualite.ValidateActualite);
 
 export default router;
