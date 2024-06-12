@@ -305,13 +305,13 @@ export class authentificationController {
   }
 
   async updateTokens(req: Request, resp: Response) {
-    const { email }: { email: string } = req.body;
+    const { id, type }: { id: number; type: string } = req.body;
 
     try {
       // Retrieve the refresh token from the database
       const refreshTokenResult = await prisma.profile.findUnique({
         where: {
-          email: email,
+          id: id,
         },
         select: {
           refreshToken: true,
@@ -346,7 +346,7 @@ export class authentificationController {
 
         // If refresh token is valid, generate a new access token
         const newAccessToken = jwt.sign(
-          { email: email },
+          { id: id, type: type },
           jwtSecret,
           jwtOptionsAccess
         );
