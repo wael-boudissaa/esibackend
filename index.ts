@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import emailRoute from "./routes/emailRoute";
 import events from "./routes/eventRoute";
 import clubs from "./routes/sectionRoute";
+import visite from "./routes/visiteRouter";
 
 import actualite from "./routes/actualiteRouter";
 import demande from "./routes/demandeRouter";
@@ -38,6 +39,7 @@ app.use(
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 app.use("/user", authentificationRoute);
+app.use("/visite", visite);
 
 app.use("/partenaire", partenaire);
 app.use("/events", events);

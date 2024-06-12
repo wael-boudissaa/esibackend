@@ -1,6 +1,8 @@
 import express, { Express, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import emailController from "./emailController";
+import { startOfMonth, endOfMonth } from "date-fns";
+
 const prisma = new PrismaClient();
 
 interface DemandeVisitor {
@@ -155,6 +157,59 @@ class DemandeVisiteController {
       });
     } catch (err) {
       console.error("Error updating demande visite:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getVisite(req: Request, res: Response) {
+    try {
+      const now = new Date();
+      const startDate = startOfMonth(now);
+      const endDate = endOfMonth(now);
+
+      const getVisite = await prisma.visite.findMany({
+        where: {
+          dateVisite: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      });
+
+      res.status(200).json({
+        message: "Visites for the current month fetched successfully",
+        visites: getVisite,
+      });
+    } catch (err) {
+      console.error("Error fetching visites for the current month:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  async postVisite(req: Request, res: Response) {
+    try {
+      const { dateVisite, idAdministrator, status, capacite } = req.body;
+
+      // Validate the required fields
+      if (!dateVisite || !idAdministrator || !status || !capacite) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      // Create a new visite entry
+      const newVisite = await prisma.visite.create({
+        data: {
+          dateVisite: dateVisite, // Ensure the date is in the correct format
+          idAdministrator: Number(idAdministrator), // Ensure the ID is a number
+          status: status,
+          capacite: Number(capacite), // Ensure the capacity is a number
+        },
+      });
+
+      res.status(201).json({
+        message: "Visite created successfully",
+        visite: newVisite,
+      });
+    } catch (err) {
+      console.error("Error creating visite:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }
