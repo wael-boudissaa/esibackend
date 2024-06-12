@@ -158,14 +158,14 @@ export class authentificationController {
       }
 
       const refreshToken = jwt.sign(
-        { type: user.type, id: user.id },
+        { type: user.type, id: user.author?.idAuthor },
         jwtSecret,
         jwtOptionsRefresh
       );
       const accessToken = jwt.sign(
         {
           type: user.type,
-          id: user.id,
+          id: user.author?.idAuthor,
         },
         jwtSecret,
         jwtOptionsAccess
@@ -308,25 +308,20 @@ export class authentificationController {
     const { id, type }: { id: number; type: string } = req.body;
 
     try {
-      // Retrieve the refresh token from the database
-      const refreshTokenResult = await prisma.profile.findUnique({
+      const author = await prisma.author.findUnique({
         where: {
-          id: id,
+          idAuthor: id,
         },
-        select: {
-          refreshToken: true,
+        include: {
+          profile: true,
         },
       });
 
-      // If no refresh token found, respond with error
-      if (!refreshTokenResult) {
-        return resp.status(403).json({ error: "" });
-      }
-      if (!refreshTokenResult || refreshTokenResult.refreshToken === null) {
+      if (!author || !author.profile || !author.profile.refreshToken) {
         return resp.status(403).json({ error: "Refresh token not found" });
       }
 
-      const refreshToken = refreshTokenResult.refreshToken;
+      const refreshToken = author.profile.refreshToken;
       console.log(refreshToken);
 
       jwt.verify(refreshToken, jwtSecret, async (err, decoded) => {
