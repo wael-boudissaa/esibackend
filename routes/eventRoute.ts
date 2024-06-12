@@ -14,5 +14,6 @@ router.post("/create", upload.single("image"), eventController.createEvent);
 router.put("/validate", eventController.validateEvent);
 router.delete("/delete/:id", eventController.deleteEvent);
 router.get("/s/search", eventController.searchEventsByName);
+router.get("/user/:id", eventController.getEvenetByUser);
 
 export default router;
