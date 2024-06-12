@@ -62,7 +62,7 @@ class EventController {
     const { idType } = req.body;
     try {
       const event = await prisma.typeEvenement.findUnique({
-        where: {
+        where: {  
           idTypeEvenement: parseInt(idType),
         },
         include: {

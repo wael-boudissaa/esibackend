@@ -145,12 +145,14 @@ export class authentificationController {
       }
 
       const refreshToken = jwt.sign(
-        { email: email, type: user.type },
+        { type: user.type, id: user.id },
         jwtSecret,
         jwtOptionsRefresh
       );
       const accessToken = jwt.sign(
-        { email: email, type: user.type },
+        { 
+          
+          type: user.type, id: user.id },
         jwtSecret,
         jwtOptionsAccess
       );
