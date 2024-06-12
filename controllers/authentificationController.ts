@@ -132,7 +132,20 @@ export class authentificationController {
     }
 
     try {
-      const user = await prisma.profile.findUnique({ where: { email: email } });
+      const user = await prisma.profile.findUnique({
+        where: { email: email },
+        include: {
+          author: {
+            include: {
+              dre: true,
+              club: true,
+              administrator: true,
+              responsableEvenenement: true,
+              // Include other relations as needed
+            },
+          },
+        },
+      });
 
       if (!user) {
         return res.status(401).send({ message: "User not found" });
@@ -150,9 +163,10 @@ export class authentificationController {
         jwtOptionsRefresh
       );
       const accessToken = jwt.sign(
-        { 
-          
-          type: user.type, id: user.id },
+        {
+          type: user.type,
+          id: user.id,
+        },
         jwtSecret,
         jwtOptionsAccess
       );
