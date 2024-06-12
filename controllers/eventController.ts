@@ -25,6 +25,17 @@ class EventController {
     }
   }
 
+    async getAlllTypes (req:Request,res:Response){
+      try {
+        const typeEvents = await prisma.typeEvenement.findMany();
+        res.json(typeEvents);
+      } catch (error) {
+        console.error("Error retrieving types:", error);
+        res
+          .status(500)
+          .json({ error: "An error occurred while retrieving types." });
+      }
+    }
   async getEventById(req: Request, res: Response) {
     const { id } = req.params;
     try {

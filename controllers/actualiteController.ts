@@ -27,6 +27,18 @@ class ActualiteController {
         .json({ error: "An error occurred while retrieving actualites." });
     }
   }
+  async getAlllTypes (req:Request,res:Response){
+    try {
+      const typeActualite = await prisma.typeActualite.findMany();
+      res.json(typeActualite);
+    } catch (error) {
+      console.error("Error retrieving types:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving types." });
+    }
+  }
+
   async getActualiteById(req: Request, res: Response) {
     const { idActualite } = req.params;
     try {
