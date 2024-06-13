@@ -27,7 +27,7 @@ class ActualiteController {
         .json({ error: "An error occurred while retrieving actualites." });
     }
   }
-  async getAlllTypes (req:Request,res:Response){
+  async getAlllTypes(req: Request, res: Response) {
     try {
       const typeActualite = await prisma.typeActualite.findMany();
       res.json(typeActualite);
@@ -69,6 +69,7 @@ class ActualiteController {
       date,
       authorId,
       typeId,
+      file,
       image,
     }: {
       titre: string;
@@ -76,8 +77,10 @@ class ActualiteController {
       date: Date;
       authorId: string;
       typeId: string;
+      file: string;
       image: string;
     } = req.body;
+    console.log(req.body.file);
     const imaget = (req as MulterRequest).file.path;
 
     const parsedAuthorId = parseInt(authorId);
@@ -100,7 +103,8 @@ class ActualiteController {
             description: description,
             status: "accepted",
             image: imaget,
-            date: date,
+            file: file,
+            date: new Date(),
           },
         });
       } else {
@@ -112,7 +116,8 @@ class ActualiteController {
             description: description,
             status: "pending",
             image: imaget,
-            date: date,
+            file: file,
+            date: new Date(),
           },
         });
       }

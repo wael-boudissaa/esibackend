@@ -52,7 +52,7 @@ class DemandeDevisController {
       });
 
       res.status(201).json({
-        message: "Demande Partenaire created successfully",
+        message: "Demande devis created successfully",
         demandeDevis: createDemandeDevis,
       });
     } catch (err) {
@@ -62,42 +62,68 @@ class DemandeDevisController {
   }
 
   async PatchDemandeDevis(req: Request, res: Response) {
-    const { demandeDevisId, dreId } = req.body;
+    const { demandeDevisId, authorId } = req.body;
 
     try {
+      // Retrieve DRE ID associated with the author
+      const authorWithDre = await prisma.author.findUnique({
+        where: {
+          idAuthor: authorId,
+        },
+        include: {
+          dre: {
+            select: {
+              idDre: true,
+            },
+          },
+        },
+      });
+
+      const dreId = authorWithDre?.dre?.idDre;
+
+      if (!dreId) {
+        throw new Error("DRE ID not found for the given author");
+      }
+
+      // Create a new record in demandeDevis_DRE
       const traceValidation = await prisma.demandeDevis_DRE.create({
         data: {
-          idDemandeDevis: demandeDevisId,
+          idDemandeDevis: parseInt(demandeDevisId),
           idDRE: dreId,
           ValidatedAt: new Date(),
         },
       });
-      if (traceValidation) {
-        const updatedDemandeDevis = await prisma.demandedevis.update({
-          where: {
-            idDemandeDevis: parseInt(demandeDevisId),
-          },
-          data: {
-            status: "accepted",
-          },
-          include: {
-            visitor: {
-              select: {
-                email: true,
-              },
+
+      if (!traceValidation) {
+        throw new Error("Failed to create traceValidation");
+      }
+
+      // Update demande devis status to "accepted"
+      const updatedDemandeDevis = await prisma.demandedevis.update({
+        where: {
+          idDemandeDevis: parseInt(demandeDevisId),
+        },
+        data: {
+          status: "accepted",
+        },
+        include: {
+          visitor: {
+            select: {
+              email: true,
             },
           },
-        });
-        const email = updatedDemandeDevis.visitor.email;
-        let sendEmail = new emailController(email);
-        await sendEmail.generateMail(EmailDemandeDevis(email), email);
-        res.status(200).json({
-          message: "Demande devis updated successfully",
-          updatedDemandeVisite: updatedDemandeDevis,
-        });
-      } else {
-        res.status(400).json({ error: "Something Wrong" });
-      }
+        },
+      });
+
+      const email = updatedDemandeDevis.visitor.email;
+      // Assuming emailController and EmailDemandeDevis are correctly implemented
+      let sendEmail = new emailController(email);
+      await sendEmail.generateMail(EmailDemandeDevis(email), email);
+
+      res.status(200).json({
+        message: "Demande Devis updated successfully",
+        updatedDemandeDevis: updatedDemandeDevis,
+      });
     } catch (err) {
       console.error("Error updating demande devis:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -106,11 +132,13 @@ class DemandeDevisController {
 
   async getDemandeDevis(req: Request, res: Response) {
     try {
-      const getDemandeDEvis = await prisma.demandedevis.findMany({});
+      const getDemandeDEvis = await prisma.demandedevis.findMany({
+        include: { visitor: true },
+      });
 
       res.status(200).json({
         message: "Demande devis updated successfully",
-        DemandeVisite: getDemandeDEvis,
+        DemandeDevis: getDemandeDEvis,
       });
     } catch (err) {
       console.error("Error updating demande devis:", err);
