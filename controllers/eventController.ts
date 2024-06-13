@@ -150,7 +150,7 @@ class EventController {
       });
 
       res.status(201).json({ message: "Event created successfully", event });
-    } catch (err) {
+    } catch (err) {   
       console.error("Error creating event:", err);
       res.status(500).json({ error: "Internal server error" });
     }

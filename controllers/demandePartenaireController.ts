@@ -61,9 +61,28 @@ class DemandePartenaireController {
   }
 
   async PatchDemandePartenaire(req: Request, res: Response) {
-    const { demandePartenaireId, dreId } = req.body;
+    const { demandePartenaireId, authorId } = req.body;
 
     try {
+      const authorWithDre = await prisma.author.findUnique({
+        where: {
+          idAuthor: authorId, // Replace `authorId` with the actual author ID
+        },
+        include: {
+          dre: {
+            select: {
+              idDre: true,
+            },
+          },
+        },
+      });
+
+      const dreId = authorWithDre?.dre?.idDre;
+
+      if (!dreId) {
+        throw new Error("DRE ID not found for the given author");
+      }
+
       const traceValidation = await prisma.demandePartenaire_DRE.create({
         data: {
           idDemandePartenaire: parseInt(demandePartenaireId),
@@ -104,11 +123,15 @@ class DemandePartenaireController {
   }
   async getDemandePartenaire(req: Request, res: Response) {
     try {
-      const getDemandePartenaire = await prisma.demandepartenaire.findMany({});
+      const getDemandePartenaire = await prisma.demandepartenaire.findMany({
+        include: {
+          visitor: true,
+        },
+      });
 
       res.status(200).json({
         message: "Demande partenaire updated successfully",
-        DemandeVisite: getDemandePartenaire,
+        DemandePartenaire: getDemandePartenaire,
       });
     } catch (err) {
       console.error("Error updating demande partenaire:", err);
