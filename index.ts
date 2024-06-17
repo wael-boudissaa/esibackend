@@ -7,9 +7,9 @@ import visite from "./routes/visiteRouter";
 
 import actualite from "./routes/actualiteRouter";
 import demande from "./routes/demandeRouter";
-
+import section from "./routes/sectionRoute"
 import authentificationRoute from "./routes/authentificationRoute";
-import partenaire from "./routes/partenaireRoute";
+import club from "./routes/clubRouter";
 
 dotenv.config();
 const cors = require("cors");
@@ -41,11 +41,12 @@ const Mailgen = require("mailgen");
 app.use("/user", authentificationRoute);
 app.use("/visite", visite);
 
-app.use("/partenaire", partenaire);
+app.use("/club", club);
 app.use("/events", events);
 app.use("/clubs", clubs);
 app.use("/actualite", actualite);
 app.use("/demande", demande);
+app.use("/section", section);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

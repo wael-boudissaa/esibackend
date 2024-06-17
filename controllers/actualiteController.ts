@@ -80,7 +80,6 @@ class ActualiteController {
       file: string;
       image: string;
     } = req.body;
-    console.log(req.body.file);
     const imaget = (req as MulterRequest).file.path;
 
     const parsedAuthorId = parseInt(authorId);

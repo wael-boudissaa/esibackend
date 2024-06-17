@@ -1,46 +1,9 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { MulterRequest } from "./eventController";
 
 const prisma = new PrismaClient();
 
-// export const createClub = async (req: Request, res: Response) => {
-//     const { profile } = req.body;
-//     try {
-//         const newClub = await prisma.club.create({
-//             data: {
-//                 profile: {
-//                     connect: { id: profile }
-//                 }
-//             }
-//         });
-//         res.status(201).json(newClub);
-//     } catch (error) {
-//         console.error('Error creating club:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
-// export const getAllClubs = async (req: Request, res: Response) => {
-//     try {
-//         const clubs = await prisma.club.findMany();
-//         res.status(200).json(clubs);
-//     } catch (error) {
-//         console.error('Error getting clubs:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
-// export const getActivesClubs = async (req: Request, res: Response) => {
-//     try {
-//         const clubs = await prisma.club.findMany({
-//             where: { isActive: true }
-//         });
-//         res.status(200).json(clubs);
-//     } catch (error) {
-//         console.error('Error getting clubs:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
 export class sectionContoller {
   async getSectionPage(req: Request, res: Response) {
     const { idPage } = req.body;
@@ -61,42 +24,72 @@ export class sectionContoller {
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
+  async getGallerie(req: Request, res: Response) {
+    const { idPage } = req.body;
+    try {
+      const gallerie = await prisma.gallerie.findMany({});
+      if (!gallerie) {
+        res.status(404).json({ error: "page not found" });
+      } else {
+        res.status(200).json(gallerie);
+      }
+    } catch (error) {
+      console.error("Error getting images by ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+  async PostGallerie(req: Request, res: Response) {
+    try {
+      const imaget = (req as MulterRequest).file.path;
+      const createGallerie = await prisma.gallerie.create({
+        data: {
+          link: imaget,
+        },
+      });
+      res.status(201).json(createGallerie);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while creating the gallerie." });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+  async updateSection(req: Request, res: Response) {
+    const { idSection } = req.params;
+    const { titreSection, typeSection, description, link, image } = req.body;
 
-  //   async createDemandeEvenementClub (req:Request, res:Response){
-  //     const {email,phone,fullname,raison_}
-  //   }
+    try {
+      const section = await prisma.section.findUnique({
+        where: { idSection: Number(idSection) },
+      });
+
+      if (!section) {
+        return res.status(404).json({ error: "Section not found" });
+      }
+
+      // Update the section
+      const updatedSection = await prisma.section.update({
+        where: { idSection: Number(idSection) },
+        data: {
+          titreSection,
+          typeSection,
+          description,
+          link,
+          image,
+        },
+      });
+
+      // Return the updated section
+      res.json(updatedSection);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating the section" });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
 }
-
-// export const updateClub = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const { profile } = req.body;
-//     try {
-//         const updatedClub = await prisma.club.update({
-//             where: { idClub: parseInt(id) },
-//             data: {
-//                 profile: {
-//                     connect: { id: profile }
-//                 }
-//             }
-//         });
-//         res.status(200).json(updatedClub);
-//     } catch (error) {
-//         console.error('Error updating club:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
-// export const deleteClub = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     try {
-//         const deletedClub = await prisma.club.update({
-//             where: { clubId: parseInt(id) },
-//             data: { isActive: false}
-//         });
-//         console.log('deleted club : ' + deletedClub);
-//         res.status(204).end();
-//     } catch (error) {
-//         console.error('Error deleting club:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
