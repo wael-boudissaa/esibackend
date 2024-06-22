@@ -28,6 +28,7 @@ model heroSection {
 model gallerie {
   idGallerie Int @id @default(autoincrement())
   link String?
+  type String 
 }
 
 model section { 

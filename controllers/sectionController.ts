@@ -60,10 +60,12 @@ export class sectionContoller {
   }
   async PostGallerie(req: Request, res: Response) {
     try {
+      const { type } = req.body;
       const imaget = (req as MulterRequest).file.path;
       const createGallerie = await prisma.gallerie.create({
         data: {
           link: imaget,
+          type: type,
         },
       });
       res.status(201).json(createGallerie);
