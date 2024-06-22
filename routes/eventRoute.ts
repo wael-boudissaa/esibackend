@@ -7,7 +7,7 @@ const eventController = new EventController();
 
 router.get("/all", eventController.getAllEvents);
 router.get("/:id", eventController.getEventById);
-router.get("/t/type", eventController.getEvenetByIdType);
+router.get("/t/type/:idType", eventController.getEvenetByIdType);
 router.get("/t/types", eventController.getAlllTypes);
 
 router.post("/create", upload.single("image"), eventController.createEvent);

@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export class sectionContoller {
   async getSectionPage(req: Request, res: Response) {
-    const { idPage } = req.body;
+    const { idPage } = req.params;
     try {
       const sections = await prisma.page.findUnique({
         include: {
@@ -25,7 +25,7 @@ export class sectionContoller {
     }
   }
   async getHeroSection(req: Request, res: Response) {
-    const { idPage } = req.body;
+    const { idPage } = req.params;
     try {
       const herosection = await prisma.page.findUnique({
         include: {
@@ -45,7 +45,6 @@ export class sectionContoller {
   }
 
   async getGallerie(req: Request, res: Response) {
-    const { idPage } = req.body;
     try {
       const gallerie = await prisma.gallerie.findMany({});
       if (!gallerie) {
@@ -79,8 +78,8 @@ export class sectionContoller {
     }
   }
   async updateSection(req: Request, res: Response) {
-    const { idSection } = req.params;
-    const { titreSection, typeSection, description, link, image } = req.body;
+    const { idSection, titreSection, typeSection, description, link, image } =
+      req.body;
 
     try {
       const section = await prisma.section.findUnique({

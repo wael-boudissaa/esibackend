@@ -147,7 +147,6 @@ class DemandeVisiteController {
   // Other methods...
 
   async getDemandeVisite(req: Request, res: Response) {
-    const { demandeVisiteId } = req.body;
     try {
       const getDemandeVisite = await prisma.demandevisite.findMany({});
 

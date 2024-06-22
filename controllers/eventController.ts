@@ -81,7 +81,7 @@ class EventController {
     }
   }
   async getEvenetByIdType(req: Request, res: Response) {
-    const { idType } = req.body;
+    const { idType } = req.params;
     try {
       const event = await prisma.typeEvenement.findUnique({
         where: {
