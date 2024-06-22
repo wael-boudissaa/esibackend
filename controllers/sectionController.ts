@@ -24,6 +24,26 @@ export class sectionContoller {
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
+  async getHeroSection(req: Request, res: Response) {
+    const { idPage } = req.body;
+    try {
+      const herosection = await prisma.page.findUnique({
+        include: {
+          hersection: true,
+        },
+        where: { idPage: parseInt(idPage) },
+      });
+      if (!herosection) {
+        res.status(404).json({ error: "page not found" });
+      } else {
+        res.status(200).json(herosection);
+      }
+    } catch (error) {
+      console.error("Error getting page by ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
   async getGallerie(req: Request, res: Response) {
     const { idPage } = req.body;
     try {

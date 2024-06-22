@@ -13,6 +13,8 @@ const section = new clubController.sectionContoller();
 // router.delete('/delete/:id', clubController.deleteClub);
 
 router.get("/gallerie", section.getGallerie);
+router.get("/hero", section.getHeroSection);
+
 router.post("/gallerie", upload.single("image"), section.PostGallerie);
 router.get("/all", section.getSectionPage);
 router.put("/update/:idSection", section.updateSection);
