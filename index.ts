@@ -7,7 +7,7 @@ import visite from "./routes/visiteRouter";
 
 import actualite from "./routes/actualiteRouter";
 import demande from "./routes/demandeRouter";
-import section from "./routes/sectionRoute"
+import section from "./routes/sectionRoute";
 import authentificationRoute from "./routes/authentificationRoute";
 import club from "./routes/clubRouter";
 
@@ -30,7 +30,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(
   cors({
-    origin: "https://esi-steel.vercel.app/",
+    origin: true,
     methods: "GET,POST,PATCH,PUT",
     credentials: true,
   })
