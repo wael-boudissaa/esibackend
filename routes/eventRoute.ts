@@ -5,6 +5,7 @@ import upload from "../middleware/uploadingImages";
 const router = express.Router();
 const eventController = new EventController();
 
+
 router.get("/all", eventController.getAllEvents);
 router.get("/all/accepted", eventController.getAllEventsAccepted);
 
