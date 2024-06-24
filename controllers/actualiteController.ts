@@ -67,6 +67,24 @@ class ActualiteController {
         .json({ error: "An error occurred while retrieving actualites." });
     }
   }
+  async getAllActualitePending(req: Request, res: Response) {
+    try {
+      const actualites = await prisma.actualite.findMany({
+        include: {
+          typeActualite: true,
+        },
+        where: {
+          status: "pending",
+        },
+      });
+      res.json(actualites);
+    } catch (error) {
+      console.error("Error retrieving actualites:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving actualites." });
+    }
+  }
   async getAlllTypes(req: Request, res: Response) {
     try {
       const typeActualite = await prisma.typeActualite.findMany();

@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get("/all", actualite.getAllActualite);
 router.get("/all/accepted", actualite.getAllActualiteAccepted);
+router.get("/all/pending", actualite.getAllActualitePending);
 
 router.get("/:idActualite", actualite.getActualiteById);
 router.delete("/delete", actualite.DeleteActualite);

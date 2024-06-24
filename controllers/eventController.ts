@@ -42,6 +42,24 @@ class EventController {
         .json({ error: "An error occurred while retrieving events." });
     }
   }
+  async getAllEventsPending(req: Request, res: Response) {
+    try {
+      const evenement = await prisma.evenement.findMany({
+        include: {
+          typeEvenement: true,
+        },
+        where: {
+          status: "pending",
+        },
+      });
+      res.json(evenement);
+    } catch (error) {
+      console.error("Error retrieving events:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving events." });
+    }
+  }
 
   async getAlllTypes(req: Request, res: Response) {
     try {
