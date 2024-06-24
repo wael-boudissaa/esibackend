@@ -24,6 +24,24 @@ class EventController {
         .json({ error: "An error occurred while retrieving events." });
     }
   }
+  async getAllEventsAccepted(req: Request, res: Response) {
+    try {
+      const evenement = await prisma.evenement.findMany({
+        include: {
+          typeEvenement: true,
+        },
+        where: {
+          status: "accepted",
+        },
+      });
+      res.json(evenement);
+    } catch (error) {
+      console.error("Error retrieving events:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving events." });
+    }
+  }
 
   async getAlllTypes(req: Request, res: Response) {
     try {
@@ -150,7 +168,7 @@ class EventController {
       });
 
       res.status(201).json({ message: "Event created successfully", event });
-    } catch (err) {   
+    } catch (err) {
       console.error("Error creating event:", err);
       res.status(500).json({ error: "Internal server error" });
     }

@@ -6,6 +6,8 @@ const router = express.Router();
 const eventController = new EventController();
 
 router.get("/all", eventController.getAllEvents);
+router.get("/all/accepted", eventController.getAllEventsAccepted);
+
 router.get("/:id", eventController.getEventById);
 router.get("/t/type/:idType", eventController.getEvenetByIdType);
 router.get("/t/types", eventController.getAlllTypes);

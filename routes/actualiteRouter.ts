@@ -7,6 +7,8 @@ const actualite = new ActualiteController();
 const router = express.Router();
 
 router.get("/all", actualite.getAllActualite);
+router.get("/all/accepted", actualite.getAllActualiteAccepted);
+
 router.get("/:idActualite", actualite.getActualiteById);
 router.delete("/delete", actualite.DeleteActualite);
 router.post("/create", upload.single("image"), actualite.createActuailte);
