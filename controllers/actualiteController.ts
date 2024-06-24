@@ -12,6 +12,28 @@ export interface MulterRequest extends Request {
 }
 
 class ActualiteController {
+  async getActualiteByUser(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const actualite = await prisma.actualite.findMany({
+        where: {
+          idAuthor: parseInt(id),
+        },
+        include: {
+          typeActualite: true,
+        },
+      });
+      if (!actualite) {
+        return res.status(404).json({ error: "Actualite not found." });
+      }
+      res.json(actualite);
+    } catch (error) {
+      console.error("Error retrieving Actualite:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving event." });
+    }
+  }
   async getAllActualite(req: Request, res: Response) {
     try {
       const actualites = await prisma.actualite.findMany({
